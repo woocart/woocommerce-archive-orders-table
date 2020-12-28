@@ -350,6 +350,7 @@ class WooCommerce_Archive_Orders_Table_CLI extends WP_CLI_Command {
 			FROM {$wpdb->posts} p
 			LEFT JOIN {$order_table} o ON p.ID = o.order_id
 			WHERE p.post_type IN (" . implode( ', ', array_fill( 0, count( $order_types ), '%s' ) ) . ')
+			AND p.post_staus = "wc-completed"
 			AND o.order_id IS NULL
 		';
 		$parameters  = $order_types;
