@@ -2,18 +2,18 @@
 /**
  * Tests for the Migration utility.
  *
- * @package WooCommerce_Custom_Orders_Table
- * @author  Liquid Web
+ * @package WooCommerce_Archive_Orders_Table
+ * @author  WooCart
  */
 
 namespace Tests\Util;
 
-use LiquidWeb\WooCommerceCustomOrdersTable\Util\QueryIterator;
-use LiquidWeb\WooCommerceCustomOrdersTable\Exceptions\QueryException;
+use WooCart\WooCommerceArchiveOrdersTable\Util\QueryIterator;
+use WooCart\WooCommerceArchiveOrdersTable\Exceptions\QueryException;
 use TestCase;
 
 /**
- * @covers LiquidWeb\WooCommerceCustomOrdersTable\Util\QueryIterator
+ * @covers WooCart\WooCommerceArchiveOrdersTable\Util\QueryIterator
  * @group Util
  */
 class QueryIteratorTest extends TestCase {

@@ -2,8 +2,8 @@
 /**
  * Dummy test class for WP_CLI_Command.
  *
- * @package WooCommerce_Custom_Orders_Table
- * @author  Liquid Web
+ * @package WooCommerce_Archive_Orders_Table
+ * @author  WooCart
  */
 
 use PHPUnit\Framework\Assert;

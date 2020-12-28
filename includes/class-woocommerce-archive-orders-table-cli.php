@@ -2,16 +2,16 @@
 /**
  * CLI Tool for migrating order data to/from custom table.
  *
- * @package WooCommerce_Custom_Orders_Table
- * @author  Liquid Web
+ * @package WooCommerce_Archive_Orders_Table
+ * @author  WooCart
  */
 
-use LiquidWeb\WooCommerceCustomOrdersTable\Util\QueryIterator;
+use WooCart\WooCommerceArchiveOrdersTable\Util\QueryIterator;
 
 /**
  * Manages the contents of the WooCommerce orders table.
  */
-class WooCommerce_Custom_Orders_Table_CLI extends WP_CLI_Command {
+class WooCommerce_Archive_Orders_Table_CLI extends WP_CLI_Command {
 
 	/**
 	 * Contains IDs of any orders that have been skipped during the migration.
@@ -27,7 +27,7 @@ class WooCommerce_Custom_Orders_Table_CLI extends WP_CLI_Command {
 		add_action( 'woocommerce_caught_exception', 'self::handle_exceptions' );
 
 		// Ensure the custom table has been installed.
-		WooCommerce_Custom_Orders_Table_Install::activate();
+		WooCommerce_Archive_Orders_Table_Install::activate();
 	}
 
 	/**
@@ -50,7 +50,7 @@ class WooCommerce_Custom_Orders_Table_CLI extends WP_CLI_Command {
 		WP_CLI::log(
 			sprintf(
 				/* Translators: %1$d is the number of orders to be migrated. */
-				_n( 'There is %1$d order to be migrated.', 'There are %1$d orders to be migrated.', $order_count, 'woocommerce-custom-orders-table' ),
+				_n( 'There is %1$d order to be migrated.', 'There are %1$d orders to be migrated.', $order_count, 'woocommerce-archive-orders-table' ),
 				$order_count
 			)
 		);
@@ -89,7 +89,7 @@ class WooCommerce_Custom_Orders_Table_CLI extends WP_CLI_Command {
 
 		// Abort if there are no orders to migrate.
 		if ( ! $order_count ) {
-			return WP_CLI::warning( __( 'There are no orders to migrate, aborting.', 'woocommerce-custom-orders-table' ) );
+			return WP_CLI::warning( __( 'There are no orders to migrate, aborting.', 'woocommerce-archive-orders-table' ) );
 		}
 
 		$assoc_args  = wp_parse_args(
@@ -99,7 +99,7 @@ class WooCommerce_Custom_Orders_Table_CLI extends WP_CLI_Command {
 				'save-post-meta' => false,
 			)
 		);
-		$order_table = wc_custom_order_table()->get_table_name();
+		$order_table = wc_archive_order_table()->get_table_name();
 		$order_types = wc_get_order_types( 'reports' );
 		$progress    = WP_CLI\Utils\make_progress_bar( 'Order Data Migration', $order_count );
 		$processed   = 0;
@@ -115,7 +115,7 @@ class WooCommerce_Custom_Orders_Table_CLI extends WP_CLI_Command {
 				WP_CLI::debug(
 					sprintf(
 						/* Translators: %1$d is the batch number, %2$d is the batch size. */
-						__( 'Beginning batch #%1$d (%2$d orders/batch).', 'woocommerce-custom-orders-table' ),
+						__( 'Beginning batch #%1$d (%2$d orders/batch).', 'woocommerce-archive-orders-table' ),
 						$batch_count,
 						$assoc_args['batch-size']
 					)
@@ -133,7 +133,7 @@ class WooCommerce_Custom_Orders_Table_CLI extends WP_CLI_Command {
 					WP_CLI::warning(
 						sprintf(
 							/* Translators: %1$d is the order ID. */
-							__( 'Unable to retrieve order with ID %1$d, skipping', 'woocommerce-custom-orders-table' ),
+							__( 'Unable to retrieve order with ID %1$d, skipping', 'woocommerce-archive-orders-table' ),
 							$order_id
 						)
 					);
@@ -147,7 +147,7 @@ class WooCommerce_Custom_Orders_Table_CLI extends WP_CLI_Command {
 						WP_CLI::warning(
 							sprintf(
 								/* Translators: %1$d is the order ID, %2$s is the error message. */
-								__( 'A database error occurred while migrating order %1$d, skipping: %2$s.', 'woocommerce-custom-orders-table' ),
+								__( 'A database error occurred while migrating order %1$d, skipping: %2$s.', 'woocommerce-archive-orders-table' ),
 								$order_id,
 								$result->get_error_message()
 							)
@@ -158,7 +158,7 @@ class WooCommerce_Custom_Orders_Table_CLI extends WP_CLI_Command {
 						WP_CLI::debug(
 							sprintf(
 								/* Translators: %1$d is the migrated order ID. */
-								__( 'Order ID %1$d has been migrated.', 'woocommerce-custom-orders-table' ),
+								__( 'Order ID %1$d has been migrated.', 'woocommerce-archive-orders-table' ),
 								$order_id
 							)
 						);
@@ -167,7 +167,7 @@ class WooCommerce_Custom_Orders_Table_CLI extends WP_CLI_Command {
 					WP_CLI::debug(
 						sprintf(
 							/* Translators: %1$d is the migrated order ID. */
-							__( 'Order ID %1$d has been migrated.', 'woocommerce-custom-orders-table' ),
+							__( 'Order ID %1$d has been migrated.', 'woocommerce-archive-orders-table' ),
 							$order_id
 						)
 					);
@@ -184,7 +184,7 @@ class WooCommerce_Custom_Orders_Table_CLI extends WP_CLI_Command {
 			);
 
 			if ( $next_batch === $order_data ) {
-				return WP_CLI::error( __( 'Infinite loop detected, aborting.', 'woocommerce-custom-orders-table' ) );
+				return WP_CLI::error( __( 'Infinite loop detected, aborting.', 'woocommerce-archive-orders-table' ) );
 			} else {
 				$order_data = $next_batch;
 				$batch_count++;
@@ -195,14 +195,14 @@ class WooCommerce_Custom_Orders_Table_CLI extends WP_CLI_Command {
 
 		// Issue a warning if no orders were migrated.
 		if ( ! $processed ) {
-			return WP_CLI::warning( __( 'No orders were migrated.', 'woocommerce-custom-orders-table' ) );
+			return WP_CLI::warning( __( 'No orders were migrated.', 'woocommerce-archive-orders-table' ) );
 		}
 
 		if ( empty( $this->skipped_ids ) ) {
 			return WP_CLI::success(
 				sprintf(
 					/* Translators: %1$d is the number of migrated orders. */
-					_n( '%1$d order was migrated.', '%1$d orders were migrated.', $processed, 'woocommerce-custom-orders-table' ),
+					_n( '%1$d order was migrated.', '%1$d orders were migrated.', $processed, 'woocommerce-archive-orders-table' ),
 					$processed
 				)
 			);
@@ -210,7 +210,7 @@ class WooCommerce_Custom_Orders_Table_CLI extends WP_CLI_Command {
 			WP_CLI::warning(
 				sprintf(
 					/* Translators: %1$d is the number of orders migrated, %2$d is the number of skipped records. */
-					_n( '%1$d order was migrated, with %2$d skipped.', '%1$d orders were migrated, with %2$d skipped.', $processed, 'woocommerce-custom-orders-table' ),
+					_n( '%1$d order was migrated, with %2$d skipped.', '%1$d orders were migrated, with %2$d skipped.', $processed, 'woocommerce-archive-orders-table' ),
 					$processed,
 					count( $this->skipped_ids )
 				)
@@ -251,7 +251,7 @@ class WooCommerce_Custom_Orders_Table_CLI extends WP_CLI_Command {
 				'batch-size' => 100,
 			)
 		);
-		$order_table = wc_custom_order_table()->get_table_name();
+		$order_table = wc_archive_order_table()->get_table_name();
 		$order_count = $wpdb->get_var( 'SELECT COUNT(order_id) FROM ' . esc_sql( $order_table ) ); // WPCS: DB call ok.
 
 		// If batching has been disabled, set the batch size to the total order count (e.g. one batch).
@@ -267,7 +267,7 @@ class WooCommerce_Custom_Orders_Table_CLI extends WP_CLI_Command {
 			$order = $this->get_order( $order_query->current()->order_id );
 
 			if ( $order ) {
-				WooCommerce_Custom_Orders_Table::migrate_to_post_meta( $order );
+				WooCommerce_Archive_Orders_Table::migrate_to_post_meta( $order );
 			}
 
 			$processed++;
@@ -279,13 +279,13 @@ class WooCommerce_Custom_Orders_Table_CLI extends WP_CLI_Command {
 
 		// Issue a warning if no orders were migrated.
 		if ( ! $processed ) {
-			return WP_CLI::warning( __( 'No orders were migrated.', 'woocommerce-custom-orders-table' ) );
+			return WP_CLI::warning( __( 'No orders were migrated.', 'woocommerce-archive-orders-table' ) );
 		}
 
 		WP_CLI::success(
 			sprintf(
 				/* Translators: %1$d is the number of migrated orders. */
-				_n( '%1$d order was migrated.', '%1$d orders were migrated.', $processed, 'woocommerce-custom-orders-table' ),
+				_n( '%1$d order was migrated.', '%1$d orders were migrated.', $processed, 'woocommerce-archive-orders-table' ),
 				$processed
 			)
 		);
@@ -318,7 +318,7 @@ class WooCommerce_Custom_Orders_Table_CLI extends WP_CLI_Command {
 			WP_CLI::warning(
 				sprintf(
 					/* Translators: %1$d is the order ID, %2$s is the exception message. */
-					__( 'Encountered an error retrieving order #%1$d: %2$s', 'woocommerce-custom-orders-table' ),
+					__( 'Encountered an error retrieving order #%1$d: %2$s', 'woocommerce-archive-orders-table' ),
 					$order_id,
 					$e->getMessage()
 				)
@@ -343,7 +343,7 @@ class WooCommerce_Custom_Orders_Table_CLI extends WP_CLI_Command {
 	protected function get_migration_query( $select, $limit, $offset = 0 ) {
 		global $wpdb;
 
-		$order_table = wc_custom_order_table()->get_table_name();
+		$order_table = wc_archive_order_table()->get_table_name();
 		$order_types = wc_get_order_types( 'reports' );
 		$query       = "
 			SELECT {$select}

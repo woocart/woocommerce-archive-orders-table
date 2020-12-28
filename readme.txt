@@ -25,7 +25,7 @@ If you're looking to migrate existing order data, [you'll need to have the abili
 
 ### Contributing
 
-If you're interested in contributing to the development of the plugin or need to report an issue, please [see the contributing guidelines for the project on GitHub](https://github.com/liquidweb/woocommerce-custom-orders-table/blob/develop/CONTRIBUTING.md).
+If you're interested in contributing to the development of the plugin or need to report an issue, please [see the contributing guidelines for the project on GitHub](https://github.com/liquidweb/woocommerce-archive-orders-table/blob/develop/CONTRIBUTING.md).
 
 == Installation ==
 
@@ -35,7 +35,7 @@ After installing and activating the plugin, you'll need to migrate orders from p
 
 	$ wp wc orders-table migrate
 
-For additional information on available WP-CLI commands (including a built-in way to restore order post meta), [please see the plugin's GitHub README](https://github.com/liquidweb/woocommerce-custom-orders-table#migrating-order-data).
+For additional information on available WP-CLI commands (including a built-in way to restore order post meta), [please see the plugin's GitHub README](https://github.com/liquidweb/woocommerce-archive-orders-table#migrating-order-data).
 
 == Frequently Asked Questions ==
 
@@ -43,11 +43,11 @@ For additional information on available WP-CLI commands (including a built-in wa
 
 Once activated, WooCommerce Custom Orders Table will register the custom table (`wp_woocommerce_orders`, by default) as the source for all order data. If a request is made to load data for an order that _doesn't_ exist in the custom table, the plugin will automatically migrate the corresponding post meta into a new table row.
 
-For the best performance, it's recommended that you [explicitly migrate order data via WP-CLI](https://github.com/liquidweb/woocommerce-custom-orders-table#migrating-order-data) rather than count on each order being migrated the first time it's loaded.
+For the best performance, it's recommended that you [explicitly migrate order data via WP-CLI](https://github.com/liquidweb/woocommerce-archive-orders-table#migrating-order-data) rather than count on each order being migrated the first time it's loaded.
 
 = Can I restore my order post meta if I don't like the custom table? =
 
-If you decide that WooCommerce Custom Orders Table isn't right for you, [the plugin includes a handy `backfill` WP-CLI command](https://github.com/liquidweb/woocommerce-custom-orders-table#copying-data-from-the-orders-table-into-post-meta), which puts all of the data back into post meta.
+If you decide that WooCommerce Custom Orders Table isn't right for you, [the plugin includes a handy `backfill` WP-CLI command](https://github.com/liquidweb/woocommerce-archive-orders-table#copying-data-from-the-orders-table-into-post-meta), which puts all of the data back into post meta.
 
 Be forewarned, running `backfill` on a store with many orders will cause the post meta table to balloon quickly, so this is not recommended during peak traffic times.
 
@@ -55,11 +55,11 @@ Be forewarned, running `backfill` on a store with many orders will cause the pos
 
 During development, we've been _extremely_ careful not to break existing WooCommerce functionality; our mantra on the project has been "if it works in stock WooCommerce, it had better work with our plugin active."
 
-To this end, [the plugin test suite](https://travis-ci.org/liquidweb/woocommerce-custom-orders-table) actually bootstraps WooCommerce's core test suite, ensuring that every test within WooCommerce passes when the Custom Orders Table plugin is active. [You can read more about confidently testing WooCommerce plugins in this blog post](https://stevegrunwell.com/blog/writing-woocommerce-extensions/).
+To this end, [the plugin test suite](https://travis-ci.org/liquidweb/woocommerce-archive-orders-table) actually bootstraps WooCommerce's core test suite, ensuring that every test within WooCommerce passes when the Custom Orders Table plugin is active. [You can read more about confidently testing WooCommerce plugins in this blog post](https://stevegrunwell.com/blog/writing-woocommerce-extensions/).
 
 == Changelog ==
 
-For a complete list of all changes, please [see the plugin changelog on GitHub](https://github.com/liquidweb/woocommerce-custom-orders-table/blob/develop/CHANGELOG.md).
+For a complete list of all changes, please [see the plugin changelog on GitHub](https://github.com/liquidweb/woocommerce-archive-orders-table/blob/develop/CHANGELOG.md).
 
 = 1.0.0 =
 * Initial public release of the plugin.

@@ -2,14 +2,14 @@
 /**
  * Core plugin functionality.
  *
- * @package WooCommerce_Custom_Orders_Table
- * @author  Liquid Web
+ * @package WooCommerce_Archive_Orders_Table
+ * @author  WooCart
  */
 
 /**
  * Core functionality for WooCommerce Custom Orders Table.
  */
-class WooCommerce_Custom_Orders_Table {
+class WooCommerce_Archive_Orders_Table {
 
 	/**
 	 * The database table name.
@@ -34,22 +34,22 @@ class WooCommerce_Custom_Orders_Table {
 		add_filter( 'woocommerce_order-refund_data_store', __CLASS__ . '::order_refund_data_store' );
 
 		// Filter order report queries.
-		add_filter( 'woocommerce_reports_get_order_report_query', 'WooCommerce_Custom_Orders_Table_Filters::filter_order_report_query' );
+		add_filter( 'woocommerce_reports_get_order_report_query', 'WooCommerce_Archive_Orders_Table_Filters::filter_order_report_query' );
 
 		// Fill-in after re-indexing of billing/shipping addresses.
-		add_action( 'woocommerce_rest_system_status_tool_executed', 'WooCommerce_Custom_Orders_Table_Filters::rest_populate_address_indexes' );
+		add_action( 'woocommerce_rest_system_status_tool_executed', 'WooCommerce_Archive_Orders_Table_Filters::rest_populate_address_indexes' );
 
 		// When associating previous orders with a customer based on email, update the record.
-		add_action( 'woocommerce_update_new_customer_past_order', 'WooCommerce_Custom_Orders_Table_Filters::update_past_customer_order', 10, 2 );
+		add_action( 'woocommerce_update_new_customer_past_order', 'WooCommerce_Archive_Orders_Table_Filters::update_past_customer_order', 10, 2 );
 
-		WC_Customer_Data_Store_Custom_Table::add_hooks();
+		WC_Customer_Data_Store_Archive_Table::add_hooks();
 
 		// Register the table within WooCommerce.
 		add_filter( 'woocommerce_install_get_tables', array( $this, 'register_table_name' ) );
 
 		// If we're in a WP-CLI context, load the WP-CLI command.
 		if ( defined( 'WP_CLI' ) && WP_CLI ) {
-			WP_CLI::add_command( 'wc orders-table', 'WooCommerce_Custom_Orders_Table_CLI' );
+			WP_CLI::add_command( 'wc orders-table', 'WooCommerce_Archive_Orders_Table_CLI' );
 		}
 	}
 
@@ -248,7 +248,7 @@ class WooCommerce_Custom_Orders_Table {
 		// Remove the row from the custom table.
 		if ( true === $delete ) {
 			$wpdb->delete(
-				wc_custom_order_table()->get_table_name(),
+				wc_archive_order_table()->get_table_name(),
 				array( 'order_id' => $order->get_id() ),
 				array( '%d' )
 			);
@@ -261,7 +261,7 @@ class WooCommerce_Custom_Orders_Table {
 	 * @return string The data store class name.
 	 */
 	public static function customer_data_store() {
-		return 'WC_Customer_Data_Store_Custom_Table';
+		return 'WC_Customer_Data_Store_Archive_Table';
 	}
 
 	/**
@@ -270,7 +270,7 @@ class WooCommerce_Custom_Orders_Table {
 	 * @return string The data store class name.
 	 */
 	public static function order_data_store() {
-		return 'WC_Order_Data_Store_Custom_Table';
+		return 'WC_Order_Data_Store_Archive_Table';
 	}
 
 	/**
@@ -279,6 +279,6 @@ class WooCommerce_Custom_Orders_Table {
 	 * @return string The data store class name.
 	 */
 	public static function order_refund_data_store() {
-		return 'WC_Order_Refund_Data_Store_Custom_Table';
+		return 'WC_Order_Refund_Data_Store_Archive_Table';
 	}
 }

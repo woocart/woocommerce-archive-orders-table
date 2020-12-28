@@ -2,23 +2,23 @@
 /**
  * WooCommerce order refund data store.
  *
- * @package WooCommerce_Custom_Orders_Table
- * @author  Liquid Web
+ * @package WooCommerce_Archive_Orders_Table
+ * @author  WooCart
  */
 
 /**
  * Extend the WC_Order_Refund_Data_Store_CPT class, overloading methods that require database access in
  * order to use the new table.
  *
- * This operates in a way similar to WC_Order_Data_Store_Custom_Table, but is for *refunds*.
+ * This operates in a way similar to WC_Order_Data_Store_Archive_Table, but is for *refunds*.
  */
-class WC_Order_Refund_Data_Store_Custom_Table extends WC_Order_Refund_Data_Store_CPT {
+class WC_Order_Refund_Data_Store_Archive_Table extends WC_Order_Refund_Data_Store_CPT {
 
 	/**
 	 * Read refund data from the custom orders table.
 	 *
 	 * If the refund does not yet exist, the plugin will attempt to migrate it automatically. This
-	 * behavior can be modified via the "wc_custom_order_table_automatic_migration" filter.
+	 * behavior can be modified via the "wc_archive_order_table_automatic_migration" filter.
 	 *
 	 * @param WC_Order_Refund $refund      The refund object, passed by reference.
 	 * @param object          $post_object The post object.
@@ -30,7 +30,7 @@ class WC_Order_Refund_Data_Store_Custom_Table extends WC_Order_Refund_Data_Store
 			$refund->set_props( $data );
 		} else {
 			/** This filter is defined in class-wc-order-data-store-custom-table.php. */
-			$migrate = apply_filters( 'wc_custom_order_table_automatic_migration', true );
+			$migrate = apply_filters( 'wc_archive_order_table_automatic_migration', true );
 
 			if ( $migrate ) {
 				$this->populate_from_meta( $refund );
@@ -52,7 +52,7 @@ class WC_Order_Refund_Data_Store_Custom_Table extends WC_Order_Refund_Data_Store
 
 		$data = (array) $wpdb->get_row(
 			$wpdb->prepare(
-				'SELECT * FROM ' . esc_sql( wc_custom_order_table()->get_table_name() ) . ' WHERE order_id = %d LIMIT 1',
+				'SELECT * FROM ' . esc_sql( wc_archive_order_table()->get_table_name() ) . ' WHERE order_id = %d LIMIT 1',
 				$refund->get_id()
 			),
 			ARRAY_A
@@ -77,7 +77,7 @@ class WC_Order_Refund_Data_Store_Custom_Table extends WC_Order_Refund_Data_Store
 	protected function update_post_meta( &$refund ) {
 		global $wpdb;
 
-		$table       = wc_custom_order_table()->get_table_name();
+		$table       = wc_archive_order_table()->get_table_name();
 		$refund_data = array(
 			'order_id'           => $refund->get_id(),
 			'discount_total'     => $refund->get_discount_total( 'edit' ),
@@ -95,7 +95,7 @@ class WC_Order_Refund_Data_Store_Custom_Table extends WC_Order_Refund_Data_Store
 		);
 
 		// Insert or update the database record.
-		if ( ! wc_custom_order_table()->row_exists( $refund_data['order_id'] ) ) {
+		if ( ! wc_archive_order_table()->row_exists( $refund_data['order_id'] ) ) {
 			$inserted = $wpdb->insert( $table, $refund_data ); // WPCS: DB call OK.
 
 			if ( 1 !== $inserted ) {
@@ -110,7 +110,7 @@ class WC_Order_Refund_Data_Store_Custom_Table extends WC_Order_Refund_Data_Store
 			}
 
 			$wpdb->update(
-				wc_custom_order_table()->get_table_name(),
+				wc_archive_order_table()->get_table_name(),
 				$refund_data,
 				array( 'order_id' => (int) $refund->get_id() )
 			);
@@ -134,7 +134,7 @@ class WC_Order_Refund_Data_Store_Custom_Table extends WC_Order_Refund_Data_Store
 	public function populate_from_meta( &$refund, $delete = false ) {
 		global $wpdb;
 
-		$refund = WooCommerce_Custom_Orders_Table::populate_order_from_post_meta( $refund );
+		$refund = WooCommerce_Archive_Orders_Table::populate_order_from_post_meta( $refund );
 
 		$this->update_post_meta( $refund );
 
@@ -143,7 +143,7 @@ class WC_Order_Refund_Data_Store_Custom_Table extends WC_Order_Refund_Data_Store
 		}
 
 		if ( true === $delete ) {
-			foreach ( WooCommerce_Custom_Orders_Table::get_postmeta_mapping() as $column => $meta_key ) {
+			foreach ( WooCommerce_Archive_Orders_Table::get_postmeta_mapping() as $column => $meta_key ) {
 				delete_post_meta( $refund->get_id(), $meta_key );
 			}
 		}

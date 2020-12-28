@@ -7,13 +7,13 @@
  *
  * @link https://github.com/wp-cli/wp-cli/blob/master/php/WP_CLI/Iterators/Query.php
  *
- * @package WooCommerce_Custom_Orders_Table
- * @author  Liquid Web
+ * @package WooCommerce_Archive_Orders_Table
+ * @author  WooCart
  */
 
-namespace LiquidWeb\WooCommerceCustomOrdersTable\Util;
+namespace WooCart\WooCommerceArchiveOrdersTable\Util;
 
-use LiquidWeb\WooCommerceCustomOrdersTable\Exceptions\QueryException;
+use WooCart\WooCommerceArchiveOrdersTable\Exceptions\QueryException;
 
 /**
  * Iterate through a database query results.

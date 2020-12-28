@@ -1,9 +1,9 @@
 <?php
 /**
- * Tests for the core WooCommerce_Custom_Orders_Table class.
+ * Tests for the core WooCommerce_Archive_Orders_Table class.
  *
- * @package WooCommerce_Custom_Orders_Table
- * @author  Liquid Web
+ * @package WooCommerce_Archive_Orders_Table
+ * @author  WooCart
  */
 
 class CoreTest extends TestCase {
@@ -11,12 +11,12 @@ class CoreTest extends TestCase {
 	public function test_order_row_exists() {
 		$order = WC_Helper_Order::create_order();
 
-		$this->assertTrue( wc_custom_order_table()->row_exists( $order->get_id() ) );
-		$this->assertFalse( wc_custom_order_table()->row_exists( $order->get_id() + 1 ) );
+		$this->assertTrue( wc_archive_order_table()->row_exists( $order->get_id() ) );
+		$this->assertFalse( wc_archive_order_table()->row_exists( $order->get_id() + 1 ) );
 	}
 
 	/**
-	 * @ticket https://github.com/liquidweb/woocommerce-custom-orders-table/issues/98
+	 * @ticket https://github.com/liquidweb/woocommerce-archive-orders-table/issues/98
 	 */
 	public function test_populate_order_from_post_meta_handles_invalid_billing_emails() {
 		$this->toggle_use_custom_table( false );
@@ -24,7 +24,7 @@ class CoreTest extends TestCase {
 		update_post_meta( $order->get_id(), '_billing_email', 'this is an invalid email address' );
 		$this->toggle_use_custom_table( true );
 
-		WooCommerce_Custom_Orders_Table::populate_order_from_post_meta( $order );
+		WooCommerce_Archive_Orders_Table::populate_order_from_post_meta( $order );
 
 		$this->assertSame(
 			'this is an invalid email address',
@@ -36,7 +36,7 @@ class CoreTest extends TestCase {
 	public function test_migrate_to_post_meta() {
 		$order    = WC_Helper_Order::create_order();
 		$row      = $this->get_order_row( $order->get_id() );
-		$mapping  = WooCommerce_Custom_Orders_Table::get_postmeta_mapping();
+		$mapping  = WooCommerce_Archive_Orders_Table::get_postmeta_mapping();
 
 		// For versions < WooCommerce 3.3, a few fields may be set.
 		unset( $mapping['billing_email'], $mapping['customer_id'] );
@@ -45,7 +45,7 @@ class CoreTest extends TestCase {
 			$this->assertEmpty( get_post_meta( $order->get_id(), $meta_key, true ) );
 		}
 
-		WooCommerce_Custom_Orders_Table::migrate_to_post_meta( $order );
+		WooCommerce_Archive_Orders_Table::migrate_to_post_meta( $order );
 
 		foreach ( $mapping as $column => $meta_key ) {
 			$this->assertEquals(
@@ -64,12 +64,12 @@ class CoreTest extends TestCase {
 			'reason'   => 'For testing',
 		) );
 		$row      = $this->get_order_row( $refund->get_id() );
-		$mapping  = WooCommerce_Custom_Orders_Table::get_postmeta_mapping();
+		$mapping  = WooCommerce_Archive_Orders_Table::get_postmeta_mapping();
 
 		// For versions < WooCommerce 3.3, a few fields may be set.
 		unset( $mapping['billing_email'], $mapping['customer_id'] );
 
-		WooCommerce_Custom_Orders_Table::migrate_to_post_meta( $refund );
+		WooCommerce_Archive_Orders_Table::migrate_to_post_meta( $refund );
 
 		foreach ( $mapping as $column => $meta_key ) {
 			$this->assertEquals(
@@ -87,7 +87,7 @@ class CoreTest extends TestCase {
 
 		$last_changed = wp_cache_get( 'last_changed', 'posts' );
 
-		WooCommerce_Custom_Orders_Table::migrate_to_post_meta( $order );
+		WooCommerce_Archive_Orders_Table::migrate_to_post_meta( $order );
 
 		$this->assertEquals(
 			$last_changed,
@@ -99,7 +99,7 @@ class CoreTest extends TestCase {
 	public function test_migrate_to_post_meta_can_delete_table_rows() {
 		$order = WC_Helper_Order::create_order();
 
-		WooCommerce_Custom_Orders_Table::migrate_to_post_meta( $order, true );
+		WooCommerce_Archive_Orders_Table::migrate_to_post_meta( $order, true );
 
 		$this->assertEmpty( $this->get_order_row( $order->get_id() ) );
 	}

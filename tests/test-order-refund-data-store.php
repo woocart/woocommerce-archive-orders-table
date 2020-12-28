@@ -1,9 +1,9 @@
 <?php
 /**
- * Tests for the WC_Order_Refund_Data_Store_Custom_Table class.
+ * Tests for the WC_Order_Refund_Data_Store_Archive_Table class.
  *
- * @package WooCommerce_Custom_Orders_Table
- * @author  Liquid Web
+ * @package WooCommerce_Archive_Orders_Table
+ * @author  WooCart
  */
 
 class OrderRefundDataStoreTest extends TestCase {
@@ -52,7 +52,7 @@ class OrderRefundDataStoreTest extends TestCase {
 	}
 
 	/**
-	 * @link https://github.com/liquidweb/woocommerce-custom-orders-table/issues/49
+	 * @link https://github.com/liquidweb/woocommerce-archive-orders-table/issues/49
 	 */
 	public function test_update_post_meta_handles_duplicate_ids() {
 		$order  = WC_Helper_Order::create_order();
@@ -76,7 +76,7 @@ class OrderRefundDataStoreTest extends TestCase {
 	 * @param WC_Order_Refund $refund   The order refund object, passed by reference.
 	 */
 	protected function invoke_update_post_meta( &$refund ) {
-		$instance = new WC_Order_Refund_Data_Store_Custom_Table();
+		$instance = new WC_Order_Refund_Data_Store_Archive_Table();
 		$method   = new ReflectionMethod( $instance, 'update_post_meta' );
 		$method->setAccessible( true );
 		$method->invokeArgs( $instance, array( &$refund ) );

@@ -2,8 +2,8 @@
 /**
  * WooCommerce order data store.
  *
- * @package WooCommerce_Custom_Orders_Table
- * @author  Liquid Web
+ * @package WooCommerce_Archive_Orders_Table
+ * @author  WooCart
  */
 
 /**
@@ -12,7 +12,7 @@
  *
  * Orders are still treated as posts within WordPress, but the meta is stored in a separate table.
  */
-class WC_Order_Data_Store_Custom_Table extends WC_Order_Data_Store_CPT {
+class WC_Order_Data_Store_Archive_Table extends WC_Order_Data_Store_CPT {
 
 	/**
 	 * Hook into WooCommerce database queries related to orders.
@@ -20,7 +20,7 @@ class WC_Order_Data_Store_Custom_Table extends WC_Order_Data_Store_CPT {
 	public function __construct() {
 
 		// When creating a WooCommerce order data store request, filter the MySQL query.
-		add_filter( 'woocommerce_order_data_store_cpt_get_orders_query', 'WooCommerce_Custom_Orders_Table_Filters::filter_database_queries', PHP_INT_MAX, 2 );
+		add_filter( 'woocommerce_order_data_store_cpt_get_orders_query', 'WooCommerce_Archive_Orders_Table_Filters::filter_database_queries', PHP_INT_MAX, 2 );
 	}
 
 	/**
@@ -41,7 +41,7 @@ class WC_Order_Data_Store_Custom_Table extends WC_Order_Data_Store_CPT {
 		// Delete the database row if force_delete is true.
 		if ( isset( $args['force_delete'] ) && $args['force_delete'] ) {
 			$wpdb->delete(
-				wc_custom_order_table()->get_table_name(),
+				wc_archive_order_table()->get_table_name(),
 				array(
 					'order_id' => $order_id,
 				)
@@ -53,7 +53,7 @@ class WC_Order_Data_Store_Custom_Table extends WC_Order_Data_Store_CPT {
 	 * Read order data from the custom orders table.
 	 *
 	 * If the order does not yet exist, the plugin will attempt to migrate it automatically. This
-	 * behavior can be modified via the "wc_custom_order_table_automatic_migration" filter.
+	 * behavior can be modified via the "wc_archive_order_table_automatic_migration" filter.
 	 *
 	 * @param WC_Order $order       The order object, passed by reference.
 	 * @param object   $post_object The post object.
@@ -70,7 +70,7 @@ class WC_Order_Data_Store_Custom_Table extends WC_Order_Data_Store_CPT {
 			 * @param bool $migrate Whether or not orders should automatically be migrated once they
 			 *                      have been loaded.
 			 */
-			$migrate = apply_filters( 'wc_custom_order_table_automatic_migration', true );
+			$migrate = apply_filters( 'wc_archive_order_table_automatic_migration', true );
 
 			if ( $migrate ) {
 				$this->populate_from_meta( $order );
@@ -90,7 +90,7 @@ class WC_Order_Data_Store_Custom_Table extends WC_Order_Data_Store_CPT {
 	public function get_order_data_from_table( $order ) {
 		global $wpdb;
 
-		$table = wc_custom_order_table()->get_table_name();
+		$table = wc_archive_order_table()->get_table_name();
 		$data  = (array) $wpdb->get_row(
 			$wpdb->prepare(
 				'SELECT * FROM ' . esc_sql( $table ) . ' WHERE order_id = %d LIMIT 1',
@@ -128,7 +128,7 @@ class WC_Order_Data_Store_Custom_Table extends WC_Order_Data_Store_CPT {
 	protected function update_post_meta( &$order ) {
 		global $wpdb;
 
-		$table      = wc_custom_order_table()->get_table_name();
+		$table      = wc_archive_order_table()->get_table_name();
 		$changes    = array();
 		$order_key  = $order->get_order_key( 'edit' );
 		$order_data = array(
@@ -189,7 +189,7 @@ class WC_Order_Data_Store_Custom_Table extends WC_Order_Data_Store_CPT {
 		}
 
 		// Insert or update the database record.
-		if ( ! wc_custom_order_table()->row_exists( $order_data['order_id'] ) ) {
+		if ( ! wc_archive_order_table()->row_exists( $order_data['order_id'] ) ) {
 			$inserted = $wpdb->insert( $table, $order_data ); // WPCS: DB call OK.
 
 			if ( 1 !== $inserted ) {
@@ -253,7 +253,7 @@ class WC_Order_Data_Store_Custom_Table extends WC_Order_Data_Store_CPT {
 
 		$total = $wpdb->get_var(
 			$wpdb->prepare(
-				'SELECT SUM(o.amount) FROM ' . esc_sql( wc_custom_order_table()->get_table_name() ) . " AS o
+				'SELECT SUM(o.amount) FROM ' . esc_sql( wc_archive_order_table()->get_table_name() ) . " AS o
 				INNER JOIN $wpdb->posts AS p ON ( p.post_type = 'shop_order_refund' AND p.post_parent = %d )
 				WHERE o.order_id = p.ID",
 				$order->get_id()
@@ -273,7 +273,7 @@ class WC_Order_Data_Store_Custom_Table extends WC_Order_Data_Store_CPT {
 	public function get_order_id_by_order_key( $order_key ) {
 		global $wpdb;
 
-		$table = wc_custom_order_table()->get_table_name();
+		$table = wc_archive_order_table()->get_table_name();
 
 		return $wpdb->get_var(
 			$wpdb->prepare(
@@ -322,10 +322,10 @@ class WC_Order_Data_Store_Custom_Table extends WC_Order_Data_Store_CPT {
 
 		// Search for order meta fields.
 		if ( ! empty( $search_fields ) ) {
-			$mapping   = WooCommerce_Custom_Orders_Table::get_postmeta_mapping();
+			$mapping   = WooCommerce_Archive_Orders_Table::get_postmeta_mapping();
 			$in_table  = array_intersect( $search_fields, $mapping );
 			$meta_keys = array_diff( $search_fields, $in_table );
-			$table     = wc_custom_order_table()->get_table_name();
+			$table     = wc_archive_order_table()->get_table_name();
 
 			// Find results based on search fields that map to table columns.
 			if ( ! empty( $in_table ) ) {
@@ -405,7 +405,7 @@ class WC_Order_Data_Store_Custom_Table extends WC_Order_Data_Store_CPT {
 
 		try {
 			$table_data = $this->get_order_data_from_table( $order );
-			$order      = WooCommerce_Custom_Orders_Table::populate_order_from_post_meta( $order );
+			$order      = WooCommerce_Archive_Orders_Table::populate_order_from_post_meta( $order );
 
 			$this->update_post_meta( $order );
 		} catch ( WC_Data_Exception $e ) {
@@ -417,7 +417,7 @@ class WC_Order_Data_Store_Custom_Table extends WC_Order_Data_Store_CPT {
 		}
 
 		if ( true === $delete ) {
-			foreach ( WooCommerce_Custom_Orders_Table::get_postmeta_mapping() as $column => $meta_key ) {
+			foreach ( WooCommerce_Archive_Orders_Table::get_postmeta_mapping() as $column => $meta_key ) {
 				delete_post_meta( $order->get_id(), $meta_key );
 			}
 		}
@@ -439,7 +439,7 @@ class WC_Order_Data_Store_Custom_Table extends WC_Order_Data_Store_CPT {
 			$data['prices_include_tax'] = wc_bool_to_string( $data['prices_include_tax'] );
 		}
 
-		foreach ( WooCommerce_Custom_Orders_Table::get_postmeta_mapping() as $column => $meta_key ) {
+		foreach ( WooCommerce_Archive_Orders_Table::get_postmeta_mapping() as $column => $meta_key ) {
 			if ( isset( $data[ $column ] ) ) {
 				update_post_meta( $order->get_id(), $meta_key, $data[ $column ] );
 			}

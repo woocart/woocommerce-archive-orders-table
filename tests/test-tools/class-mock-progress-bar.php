@@ -2,8 +2,8 @@
 /**
  * Mock CLI progress bar for testing WP-CLI.
  *
- * @package WooCommerce_Custom_Orders_Table
- * @author  Liquid Web
+ * @package WooCommerce_Archive_Orders_Table
+ * @author  WooCart
  */
 
 class MockProgressBar {

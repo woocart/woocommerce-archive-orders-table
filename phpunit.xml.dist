@@ -46,7 +46,7 @@
 	<filter>
 		<whitelist>
 			<directory suffix=".php">includes</directory>
-			<file>woocommerce-custom-orders-table.php</file>
+			<file>woocommerce-archive-orders-table.php</file>
 		</whitelist>
 	</filter>
 	<php>

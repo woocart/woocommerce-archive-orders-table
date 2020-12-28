@@ -19,20 +19,20 @@
 	<rule ref="WordPress.WP.I18n">
 		<!-- Set the expected text domain. -->
 		<properties>
-			<property name="text_domain" type="array" value="woocommerce-custom-orders-table" />
+			<property name="text_domain" type="array" value="woocommerce-archive-orders-table" />
 		</properties>
 	</rule>
 
 	<rule ref="PHPCompatibility">
 		<exclude name="PHPCompatibility.PHP.NewKeywords.t_namespaceFound" />
-		<exclude-pattern>includes/class-woocommerce-custom-orders-table-cli.php</exclude-pattern>
+		<exclude-pattern>includes/class-woocommerce-archive-orders-table-cli.php</exclude-pattern>
 	</rule>
 
 	<!-- Check all PHP files in directory tree by default. -->
 	<arg name="extensions" value="php"/>
 	<file>./includes</file>
 	<file>./tests</file>
-	<file>woocommerce-custom-orders-table.php</file>
+	<file>woocommerce-archive-orders-table.php</file>
 
 	<!-- Show progress and sniff codes in all reports -->
 	<arg value="ps"/>

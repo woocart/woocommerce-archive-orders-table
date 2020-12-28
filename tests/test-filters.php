@@ -2,8 +2,8 @@
 /**
  * Tests for the query filters.
  *
- * @package WooCommerce_Custom_Orders_Table
- * @author  Liquid Web
+ * @package WooCommerce_Archive_Orders_Table
+ * @author  WooCart
  */
 
 class FiltersTest extends TestCase {
@@ -42,7 +42,7 @@ class FiltersTest extends TestCase {
 					'_old_key' => '_customer_user',
 				],
 			],
-		], WooCommerce_Custom_Orders_Table_Filters::filter_database_queries( $args, [] ) );
+		], WooCommerce_Archive_Orders_Table_Filters::filter_database_queries( $args, [] ) );
 	}
 
 	public function test_filter_database_queries_with_postmeta() {
@@ -72,7 +72,7 @@ class FiltersTest extends TestCase {
 					'_old_key' => '_billing_email',
 				],
 			],
-		], WooCommerce_Custom_Orders_Table_Filters::filter_database_queries( $args, [] ) );
+		], WooCommerce_Archive_Orders_Table_Filters::filter_database_queries( $args, [] ) );
 	}
 
 	public function test_wc_get_orders_custom_meta_key() {
@@ -104,7 +104,7 @@ class FiltersTest extends TestCase {
 			'foo'                  => 'bar',
 			'wc_order_meta_query'  => [],
 			'_wc_has_meta_columns' => false,
-		], WooCommerce_Custom_Orders_Table_Filters::filter_database_queries( [
+		], WooCommerce_Archive_Orders_Table_Filters::filter_database_queries( [
 			'foo' => 'bar',
 		], [] ) );
 	}
@@ -118,13 +118,13 @@ class FiltersTest extends TestCase {
 	public function test_filter_order_report_query( $original_query, $changed_clauses ) {
 		$this->assertEquals(
 			$this->normalize_query_array( array_merge( $original_query, $changed_clauses ) ),
-			$this->normalize_query_array( WooCommerce_Custom_Orders_Table_Filters::filter_order_report_query( $original_query ) ),
+			$this->normalize_query_array( WooCommerce_Archive_Orders_Table_Filters::filter_order_report_query( $original_query ) ),
 			'Did not perform the expected changes to the order report query.'
 		);
 	}
 
 	public function filter_order_report_provider() {
-		$table = wc_custom_order_table()->get_table_name();
+		$table = wc_archive_order_table()->get_table_name();
 
 		return array(
 			'Order report with post data' => array(
@@ -243,7 +243,7 @@ class FiltersTest extends TestCase {
 	public function test_rest_populate_address_indexes() {
 		$order = $this->generate_order_and_empty_indexes();
 
-		WooCommerce_Custom_Orders_Table_Filters::rest_populate_address_indexes( array(
+		WooCommerce_Archive_Orders_Table_Filters::rest_populate_address_indexes( array(
 			'id' => 'add_order_indexes',
 		) );
 
@@ -256,7 +256,7 @@ class FiltersTest extends TestCase {
 	public function test_rest_populate_address_indexes_only_runs_for_add_order_indexes() {
 		$order = $this->generate_order_and_empty_indexes();
 
-		WooCommerce_Custom_Orders_Table_Filters::rest_populate_address_indexes( array(
+		WooCommerce_Archive_Orders_Table_Filters::rest_populate_address_indexes( array(
 			'id' => 'some_other_id',
 		) );
 
@@ -287,7 +287,7 @@ class FiltersTest extends TestCase {
 	 * Given an array of SQL clauses, normalize them for the sake of easier comparison.
 	 *
 	 * @param array $query An array of SQL clauses, as you might receive from the
-	 *                     WooCommerce_Custom_Orders_Table_Filters::filter_order_report_query method().
+	 *                     WooCommerce_Archive_Orders_Table_Filters::filter_order_report_query method().
 	 *
 	 * @return array The $query array, with each row trimmed of excess whitespace.
 	 */
@@ -321,7 +321,7 @@ class FiltersTest extends TestCase {
 
 		$order = WC_Helper_Order::create_order();
 
-		$wpdb->update( wc_custom_order_table()->get_table_name(), array(
+		$wpdb->update( wc_archive_order_table()->get_table_name(), array(
 			'billing_index'  => null,
 			'shipping_index' => null,
 		), array(

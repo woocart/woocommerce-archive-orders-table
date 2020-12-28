@@ -2,8 +2,8 @@
 /**
  * Sample test case for WooCommerce Custom Orders Table.
  *
- * @package WooCommerce_Custom_Orders_Table
- * @author  Liquid Web
+ * @package WooCommerce_Archive_Orders_Table
+ * @author  WooCart
  */
 
 class SampleTest extends TestCase {

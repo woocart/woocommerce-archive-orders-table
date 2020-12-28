@@ -2,8 +2,8 @@
 /**
  * Table installation procedure.
  *
- * @package WooCommerce_Custom_Orders_Table
- * @author  Liquid Web
+ * @package WooCommerce_Archive_Orders_Table
+ * @author  WooCart
  */
 
 /**
@@ -11,9 +11,9 @@
  *
  * Usage:
  *
- *     WooCommerce_Custom_Orders_Table_Install::activate();
+ *     WooCommerce_Archive_Orders_Table_Install::activate();
  */
-class WooCommerce_Custom_Orders_Table_Install {
+class WooCommerce_Archive_Orders_Table_Install {
 
 	/**
 	 * The option key that contains the current schema version.
@@ -50,7 +50,7 @@ class WooCommerce_Custom_Orders_Table_Install {
 		// Load wp-admin/includes/upgrade.php, which defines dbDelta().
 		require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 
-		$table   = wc_custom_order_table()->get_table_name();
+		$table   = wc_archive_order_table()->get_table_name();
 		$collate = $wpdb->get_charset_collate();
 		$tables  = "
 			CREATE TABLE {$table} (

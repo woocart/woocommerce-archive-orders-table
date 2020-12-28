@@ -19,7 +19,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 * Add a `method_exists()` check to the wildcard `set_{$column}` method ([#139], props @blohbaugh).
 * Rewrite the way that WooCommerce core is installed in test environments ([#154]).
 * Use offsets to avoid infinite loops during migration ([#157], props @mfs-mindsize).
-* Only register the hooks for `WC_Customer_Data_Store_Custom_Table` once ([#164]).
+* Only register the hooks for `WC_Customer_Data_Store_Archive_Table` once ([#164]).
 
 ## [Version 1.0.0 (Release Candidate 3)] - 2019-07-24
 
@@ -53,7 +53,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 * Major refactoring within the plugin test suite ([#51], [#53], [#60], [#72], [#78]).
 * Prevent Travis CI from using PHPUnit 7.0 [until the WordPress core test suite can support it, too](https://core.trac.wordpress.org/ticket/43218).
 
-[This release also restores the repo development history](https://github.com/liquidweb/woocommerce-custom-orders-table/pull/63) prior to [Version 1.0.0 (Beta 1)], ensuring that the team @Mindsize is credited appropriately for their work.
+[This release also restores the repo development history](https://github.com/liquidweb/woocommerce-archive-orders-table/pull/63) prior to [Version 1.0.0 (Beta 1)], ensuring that the team @Mindsize is credited appropriately for their work.
 
 ## [Version 1.0.0 (Beta 3)] - 2018-01-23
 
@@ -81,60 +81,60 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 * Initial public release of the plugin in a beta state.
 
 
-[Unreleased]: https://github.com/liquidweb/woocommerce-custom-orders-table/compare/master...develop
-[Version 1.0.0 (Release Candidate 3)]: https://github.com/liquidweb/woocommerce-custom-orders-table/releases/tag/v1.0.0-rc3
-[Version 1.0.0 (Release Candidate 2)]: https://github.com/liquidweb/woocommerce-custom-orders-table/releases/tag/v1.0.0-rc2
-[Version 1.0.0 (Release Candidate)]: https://github.com/liquidweb/woocommerce-custom-orders-table/releases/tag/v1.0.0-rc1
-[Version 1.0.0 (Beta 3)]: https://github.com/liquidweb/woocommerce-custom-orders-table/releases/tag/v1.0.0-beta.3
-[Version 1.0.0 (Beta 2)]: https://github.com/liquidweb/woocommerce-custom-orders-table/releases/tag/v1.0.0-beta.2
-[Version 1.0.0 (Beta 1)]: https://github.com/liquidweb/woocommerce-custom-orders-table/releases/tag/v1.0.0-beta.1
-[#2]: https://github.com/liquidweb/woocommerce-custom-orders-table/pull/2
-[#5]: https://github.com/liquidweb/woocommerce-custom-orders-table/pull/5
-[#8]: https://github.com/liquidweb/woocommerce-custom-orders-table/pull/8
-[#9]: https://github.com/liquidweb/woocommerce-custom-orders-table/pull/9
-[#12]: https://github.com/liquidweb/woocommerce-custom-orders-table/pull/12
-[#15]: https://github.com/liquidweb/woocommerce-custom-orders-table/pull/15
-[#26]: https://github.com/liquidweb/woocommerce-custom-orders-table/pull/26
-[#28]: https://github.com/liquidweb/woocommerce-custom-orders-table/pull/28
-[#35]: https://github.com/liquidweb/woocommerce-custom-orders-table/pull/35
-[#36]: https://github.com/liquidweb/woocommerce-custom-orders-table/pull/36
-[#38]: https://github.com/liquidweb/woocommerce-custom-orders-table/pull/38
-[#43]: https://github.com/liquidweb/woocommerce-custom-orders-table/issues/43
-[#46]: https://github.com/liquidweb/woocommerce-custom-orders-table/pull/46
-[#50]: https://github.com/liquidweb/woocommerce-custom-orders-table/pull/50
-[#51]: https://github.com/liquidweb/woocommerce-custom-orders-table/pull/51
-[#52]: https://github.com/liquidweb/woocommerce-custom-orders-table/pull/52
-[#53]: https://github.com/liquidweb/woocommerce-custom-orders-table/pull/53
-[#60]: https://github.com/liquidweb/woocommerce-custom-orders-table/pull/60
-[#61]: https://github.com/liquidweb/woocommerce-custom-orders-table/pull/61
-[#64]: https://github.com/liquidweb/woocommerce-custom-orders-table/pull/64
-[#65]: https://github.com/liquidweb/woocommerce-custom-orders-table/pull/65
-[#72]: https://github.com/liquidweb/woocommerce-custom-orders-table/pull/72
-[#78]: https://github.com/liquidweb/woocommerce-custom-orders-table/pull/78
-[#79]: https://github.com/liquidweb/woocommerce-custom-orders-table/pull/79
-[#80]: https://github.com/liquidweb/woocommerce-custom-orders-table/pull/80
-[#81]: https://github.com/liquidweb/woocommerce-custom-orders-table/pull/81
-[#82]: https://github.com/liquidweb/woocommerce-custom-orders-table/pull/82
-[#84]: https://github.com/liquidweb/woocommerce-custom-orders-table/pull/84
-[#86]: https://github.com/liquidweb/woocommerce-custom-orders-table/pull/86
-[#87]: https://github.com/liquidweb/woocommerce-custom-orders-table/pull/87
-[#88]: https://github.com/liquidweb/woocommerce-custom-orders-table/pull/88
-[#91]: https://github.com/liquidweb/woocommerce-custom-orders-table/pull/91
-[#94]: https://github.com/liquidweb/woocommerce-custom-orders-table/pull/94
-[#101]: https://github.com/liquidweb/woocommerce-custom-orders-table/pull/101
-[#103]: https://github.com/liquidweb/woocommerce-custom-orders-table/pull/103
-[#104]: https://github.com/liquidweb/woocommerce-custom-orders-table/pull/104
-[#116]: https://github.com/liquidweb/woocommerce-custom-orders-table/pull/116
-[#117]: https://github.com/liquidweb/woocommerce-custom-orders-table/pull/117
-[#120]: https://github.com/liquidweb/woocommerce-custom-orders-table/pull/120
-[#121]: https://github.com/liquidweb/woocommerce-custom-orders-table/pull/121
-[#123]: https://github.com/liquidweb/woocommerce-custom-orders-table/pull/123
-[#124]: https://github.com/liquidweb/woocommerce-custom-orders-table/pull/124
-[#126]: https://github.com/liquidweb/woocommerce-custom-orders-table/pull/126
-[#127]: https://github.com/liquidweb/woocommerce-custom-orders-table/pull/127
-[#138]: https://github.com/liquidweb/woocommerce-custom-orders-table/pull/138
-[#139]: https://github.com/liquidweb/woocommerce-custom-orders-table/pull/139
-[#152]: https://github.com/liquidweb/woocommerce-custom-orders-table/pull/152
-[#154]: https://github.com/liquidweb/woocommerce-custom-orders-table/pull/154
-[#157]: https://github.com/liquidweb/woocommerce-custom-orders-table/pull/157
-[#164]: https://github.com/liquidweb/woocommerce-custom-orders-table/pull/164
+[Unreleased]: https://github.com/liquidweb/woocommerce-archive-orders-table/compare/master...develop
+[Version 1.0.0 (Release Candidate 3)]: https://github.com/liquidweb/woocommerce-archive-orders-table/releases/tag/v1.0.0-rc3
+[Version 1.0.0 (Release Candidate 2)]: https://github.com/liquidweb/woocommerce-archive-orders-table/releases/tag/v1.0.0-rc2
+[Version 1.0.0 (Release Candidate)]: https://github.com/liquidweb/woocommerce-archive-orders-table/releases/tag/v1.0.0-rc1
+[Version 1.0.0 (Beta 3)]: https://github.com/liquidweb/woocommerce-archive-orders-table/releases/tag/v1.0.0-beta.3
+[Version 1.0.0 (Beta 2)]: https://github.com/liquidweb/woocommerce-archive-orders-table/releases/tag/v1.0.0-beta.2
+[Version 1.0.0 (Beta 1)]: https://github.com/liquidweb/woocommerce-archive-orders-table/releases/tag/v1.0.0-beta.1
+[#2]: https://github.com/liquidweb/woocommerce-archive-orders-table/pull/2
+[#5]: https://github.com/liquidweb/woocommerce-archive-orders-table/pull/5
+[#8]: https://github.com/liquidweb/woocommerce-archive-orders-table/pull/8
+[#9]: https://github.com/liquidweb/woocommerce-archive-orders-table/pull/9
+[#12]: https://github.com/liquidweb/woocommerce-archive-orders-table/pull/12
+[#15]: https://github.com/liquidweb/woocommerce-archive-orders-table/pull/15
+[#26]: https://github.com/liquidweb/woocommerce-archive-orders-table/pull/26
+[#28]: https://github.com/liquidweb/woocommerce-archive-orders-table/pull/28
+[#35]: https://github.com/liquidweb/woocommerce-archive-orders-table/pull/35
+[#36]: https://github.com/liquidweb/woocommerce-archive-orders-table/pull/36
+[#38]: https://github.com/liquidweb/woocommerce-archive-orders-table/pull/38
+[#43]: https://github.com/liquidweb/woocommerce-archive-orders-table/issues/43
+[#46]: https://github.com/liquidweb/woocommerce-archive-orders-table/pull/46
+[#50]: https://github.com/liquidweb/woocommerce-archive-orders-table/pull/50
+[#51]: https://github.com/liquidweb/woocommerce-archive-orders-table/pull/51
+[#52]: https://github.com/liquidweb/woocommerce-archive-orders-table/pull/52
+[#53]: https://github.com/liquidweb/woocommerce-archive-orders-table/pull/53
+[#60]: https://github.com/liquidweb/woocommerce-archive-orders-table/pull/60
+[#61]: https://github.com/liquidweb/woocommerce-archive-orders-table/pull/61
+[#64]: https://github.com/liquidweb/woocommerce-archive-orders-table/pull/64
+[#65]: https://github.com/liquidweb/woocommerce-archive-orders-table/pull/65
+[#72]: https://github.com/liquidweb/woocommerce-archive-orders-table/pull/72
+[#78]: https://github.com/liquidweb/woocommerce-archive-orders-table/pull/78
+[#79]: https://github.com/liquidweb/woocommerce-archive-orders-table/pull/79
+[#80]: https://github.com/liquidweb/woocommerce-archive-orders-table/pull/80
+[#81]: https://github.com/liquidweb/woocommerce-archive-orders-table/pull/81
+[#82]: https://github.com/liquidweb/woocommerce-archive-orders-table/pull/82
+[#84]: https://github.com/liquidweb/woocommerce-archive-orders-table/pull/84
+[#86]: https://github.com/liquidweb/woocommerce-archive-orders-table/pull/86
+[#87]: https://github.com/liquidweb/woocommerce-archive-orders-table/pull/87
+[#88]: https://github.com/liquidweb/woocommerce-archive-orders-table/pull/88
+[#91]: https://github.com/liquidweb/woocommerce-archive-orders-table/pull/91
+[#94]: https://github.com/liquidweb/woocommerce-archive-orders-table/pull/94
+[#101]: https://github.com/liquidweb/woocommerce-archive-orders-table/pull/101
+[#103]: https://github.com/liquidweb/woocommerce-archive-orders-table/pull/103
+[#104]: https://github.com/liquidweb/woocommerce-archive-orders-table/pull/104
+[#116]: https://github.com/liquidweb/woocommerce-archive-orders-table/pull/116
+[#117]: https://github.com/liquidweb/woocommerce-archive-orders-table/pull/117
+[#120]: https://github.com/liquidweb/woocommerce-archive-orders-table/pull/120
+[#121]: https://github.com/liquidweb/woocommerce-archive-orders-table/pull/121
+[#123]: https://github.com/liquidweb/woocommerce-archive-orders-table/pull/123
+[#124]: https://github.com/liquidweb/woocommerce-archive-orders-table/pull/124
+[#126]: https://github.com/liquidweb/woocommerce-archive-orders-table/pull/126
+[#127]: https://github.com/liquidweb/woocommerce-archive-orders-table/pull/127
+[#138]: https://github.com/liquidweb/woocommerce-archive-orders-table/pull/138
+[#139]: https://github.com/liquidweb/woocommerce-archive-orders-table/pull/139
+[#152]: https://github.com/liquidweb/woocommerce-archive-orders-table/pull/152
+[#154]: https://github.com/liquidweb/woocommerce-archive-orders-table/pull/154
+[#157]: https://github.com/liquidweb/woocommerce-archive-orders-table/pull/157
+[#164]: https://github.com/liquidweb/woocommerce-archive-orders-table/pull/164

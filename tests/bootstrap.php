@@ -5,8 +5,8 @@
  * Since WooCommerce Custom Orders Table is meant to integrate seamlessly with WooCommerce itself,
  * the bootstrap relies heavily on the WooCommerce core test suite.
  *
- * @package WooCommerce_Custom_Orders_Table
- * @author  Liquid Web
+ * @package WooCommerce_Archive_Orders_Table
+ * @author  WooCart
  */
 
 use PHPUnit\Util\Configuration;
@@ -85,13 +85,13 @@ unset( $config_xml_path, $instances_property, $xpath_property, $config, $xargs, 
 require_once dirname( __DIR__ ) . '/vendor/autoload.php';
 require_once $_bootstrap;
 require_once __DIR__ . '/testcase.php';
-require_once dirname( __DIR__ ) . '/woocommerce-custom-orders-table.php';
+require_once dirname( __DIR__ ) . '/woocommerce-archive-orders-table.php';
 
 echo esc_html( sprintf(
 	/* Translators: %1$s is the WooCommerce release being loaded. */
-	__( 'Using WooCommerce %1$s.', 'woocommerce-custom-orders-table' ),
+	__( 'Using WooCommerce %1$s.', 'woocommerce-archive-orders-table' ),
 	WC_VERSION
 ) ) . PHP_EOL;
 
 // Activate the plugin *after* WooCommerce has been bootstrapped.
-WooCommerce_Custom_Orders_Table_Install::activate();
+WooCommerce_Archive_Orders_Table_Install::activate();

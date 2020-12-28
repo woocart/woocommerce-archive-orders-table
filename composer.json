@@ -1,5 +1,5 @@
 {
-    "name": "liquidweb/woocommerce-custom-orders-table",
+    "name": "woocart/woocommerce-archive-orders-table",
     "description": "Store WooCommerce order data in a custom table for improved performance",
     "license": "GPL-3.0-or-later",
     "type": "wordpress-plugin",
@@ -15,8 +15,8 @@
         }
     ],
     "support": {
-        "issues": "https://github.com/liquidweb/woocommerce-custom-orders-table/issues",
-        "source": "https://github.com/liquidweb/woocommerce-custom-orders-table"
+        "issues": "https://github.com/liquidweb/woocommerce-archive-orders-table/issues",
+        "source": "https://github.com/liquidweb/woocommerce-archive-orders-table"
     },
     "require": {
         "composer/installers": "^1.6",

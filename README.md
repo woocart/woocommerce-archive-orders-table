@@ -1,7 +1,7 @@
 # WooCommerce Custom Orders Table
 
-[![Build Status](https://travis-ci.org/liquidweb/woocommerce-custom-orders-table.svg?branch=develop)](https://travis-ci.org/liquidweb/woocommerce-custom-orders-table)
-[![Coverage Status](https://coveralls.io/repos/github/liquidweb/woocommerce-custom-orders-table/badge.svg?branch=develop)](https://coveralls.io/github/liquidweb/woocommerce-custom-orders-table?branch=develop)
+[![Build Status](https://travis-ci.org/liquidweb/woocommerce-archive-orders-table.svg?branch=develop)](https://travis-ci.org/liquidweb/woocommerce-archive-orders-table)
+[![Coverage Status](https://coveralls.io/repos/github/liquidweb/woocommerce-archive-orders-table/badge.svg?branch=develop)](https://coveralls.io/github/liquidweb/woocommerce-archive-orders-table?branch=develop)
 
 This plugin improves WooCommerce performance by introducing a custom table to hold all of the most common order information in a single, properly-indexed location.
 
@@ -78,4 +78,4 @@ This command does the opposite of `migrate`, looping through the orders table an
 
 ## Contributing
 
-If you're interested in contributing to the development of the plugin or need to report an issue, please [see the contributing guidelines for the project](https://github.com/liquidweb/woocommerce-custom-orders-table/blob/develop/CONTRIBUTING.md).
+If you're interested in contributing to the development of the plugin or need to report an issue, please [see the contributing guidelines for the project](https://github.com/liquidweb/woocommerce-archive-orders-table/blob/develop/CONTRIBUTING.md).

@@ -2,8 +2,8 @@
 /**
  * Tests for the WP-CLI commands.
  *
- * @package WooCommerce_Custom_Orders_Table
- * @author  Liquid Web
+ * @package WooCommerce_Archive_Orders_Table
+ * @author  WooCart
  */
 
 /**
@@ -14,7 +14,7 @@ class CLITest extends TestCase {
 	/**
 	 * Holds a fresh instance of the WP-CLI command class.
 	 *
-	 * @var WooCommerce_Custom_Orders_Table_CLI
+	 * @var WooCommerce_Archive_Orders_Table_CLI
 	 */
 	protected $cli;
 
@@ -24,7 +24,7 @@ class CLITest extends TestCase {
 	public function init_cli() {
 		WP_CLI::reset();
 
-		$this->cli = new WooCommerce_Custom_Orders_Table_CLI();
+		$this->cli = new WooCommerce_Archive_Orders_Table_CLI();
 
 		// Reset the WP_CLI counts.
 		WP_CLI::$__logger = array();
@@ -49,7 +49,7 @@ class CLITest extends TestCase {
 	}
 
 	/**
-	 * @ticket https://github.com/liquidweb/woocommerce-custom-orders-table/issues/45
+	 * @ticket https://github.com/liquidweb/woocommerce-archive-orders-table/issues/45
 	 */
 	public function test_count_handles_refunded_orders() {
 		$this->toggle_use_custom_table( false );
@@ -63,7 +63,7 @@ class CLITest extends TestCase {
 	}
 
 	/**
-	 * @ticket https://github.com/liquidweb/woocommerce-custom-orders-table/issues/57
+	 * @ticket https://github.com/liquidweb/woocommerce-archive-orders-table/issues/57
 	 */
 	public function test_count_only_counts_unmigrated_orders() {
 		$this->toggle_use_custom_table( false );
@@ -161,7 +161,7 @@ class CLITest extends TestCase {
 		add_action( 'woocommerce_order_object_updated_props', function ( $order ) {
 			global $wpdb;
 
-			$wpdb->delete( wc_custom_order_table()->get_table_name(), array(
+			$wpdb->delete( wc_archive_order_table()->get_table_name(), array(
 				'order_id' => $order->get_id(),
 			) );
 		} );
@@ -175,7 +175,7 @@ class CLITest extends TestCase {
 	}
 
 	/**
-	 * @ticket https://github.com/liquidweb/woocommerce-custom-orders-table/issues/43
+	 * @ticket https://github.com/liquidweb/woocommerce-archive-orders-table/issues/43
 	 */
 	public function test_migrate_handles_errors_with_wc_get_order() {
 		$this->toggle_use_custom_table( false );
@@ -216,7 +216,7 @@ class CLITest extends TestCase {
 	}
 
 	/**
-	 * @ticket https://github.com/liquidweb/woocommerce-custom-orders-table/issues/148
+	 * @ticket https://github.com/liquidweb/woocommerce-archive-orders-table/issues/148
 	 */
 	public function test_migrate_excludes_skipped_ids_from_the_query_loop() {
 		global $wpdb;
@@ -226,7 +226,7 @@ class CLITest extends TestCase {
 		$this->toggle_use_custom_table( true );
 
 		// Log queries without turning on SAVE_QUERIES.
-		$orders_table = wc_custom_order_table()->get_table_name();
+		$orders_table = wc_archive_order_table()->get_table_name();
 		$pattern      = "SELECT p.ID FROM {$wpdb->posts} p LEFT JOIN {$orders_table}";
 		$query_log    = [];
 
@@ -261,7 +261,7 @@ class CLITest extends TestCase {
 	}
 
 	/**
-	 * @ticket https://github.com/liquidweb/woocommerce-custom-orders-table/issues/45
+	 * @ticket https://github.com/liquidweb/woocommerce-archive-orders-table/issues/45
 	 */
 	public function test_migrate_handles_refunded_orders() {
 		$this->toggle_use_custom_table( false );
@@ -282,7 +282,7 @@ class CLITest extends TestCase {
 	}
 
 	/**
-	 * @ticket https://github.com/liquidweb/woocommerce-custom-orders-table/issues/56
+	 * @ticket https://github.com/liquidweb/woocommerce-archive-orders-table/issues/56
 	 */
 	public function test_migrate_handles_exceptions() {
 		$this->toggle_use_custom_table( false );
@@ -320,8 +320,8 @@ class CLITest extends TestCase {
 	}
 
 	/**
-	 * @ticket https://github.com/liquidweb/woocommerce-custom-orders-table/issues/69
-	 * @ticket https://github.com/liquidweb/woocommerce-custom-orders-table/issues/96
+	 * @ticket https://github.com/liquidweb/woocommerce-archive-orders-table/issues/69
+	 * @ticket https://github.com/liquidweb/woocommerce-archive-orders-table/issues/96
 	 */
 	public function test_migrate_with_duplicate_null_order_ids() {
 		$this->toggle_use_custom_table( false );
@@ -379,7 +379,7 @@ class CLITest extends TestCase {
 	}
 
 	/**
-	 * @ticket https://github.com/liquidweb/woocommerce-custom-orders-table/issues/55
+	 * @ticket https://github.com/liquidweb/woocommerce-archive-orders-table/issues/55
 	 */
 	public function test_migrate_cleans_up_post_meta_by_default() {
 		$this->toggle_use_custom_table( false );
@@ -395,7 +395,7 @@ class CLITest extends TestCase {
 	}
 
 	/**
-	 * @ticket https://github.com/liquidweb/woocommerce-custom-orders-table/issues/55
+	 * @ticket https://github.com/liquidweb/woocommerce-archive-orders-table/issues/55
 	 */
 	public function test_migrate_can_leave_post_meta() {
 		$this->toggle_use_custom_table( false );
@@ -476,7 +476,7 @@ class CLITest extends TestCase {
 		$exception = new Exception( uniqid() );
 
 		try {
-			WooCommerce_Custom_Orders_Table_CLI::handle_exceptions( $exception );
+			WooCommerce_Archive_Orders_Table_CLI::handle_exceptions( $exception );
 		} catch ( Exception $e ) {
 			$this->assertSame( $exception, $e );
 			return;

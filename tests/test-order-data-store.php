@@ -1,9 +1,9 @@
 <?php
 /**
- * Tests for the WC_Order_Data_Store_Custom_Table class.
+ * Tests for the WC_Order_Data_Store_Archive_Table class.
  *
- * @package WooCommerce_Custom_Orders_Table
- * @author  Liquid Web
+ * @package WooCommerce_Archive_Orders_Table
+ * @author  WooCart
  */
 
 class OrderDataStoreTest extends TestCase {
@@ -22,14 +22,14 @@ class OrderDataStoreTest extends TestCase {
 
 	/**
 	 * Same as test_loading_a_product_can_automatically_populate_from_meta(), but with the
-	 * auto-migration disabled via the 'wc_custom_order_table_automatic_migration' filter.
+	 * auto-migration disabled via the 'wc_archive_order_table_automatic_migration' filter.
 	 */
-	public function test_wc_custom_order_table_automatic_migration_filter() {
+	public function test_wc_archive_order_table_automatic_migration_filter() {
 		$this->toggle_use_custom_table( false );
 		$order_id = WC_Helper_Order::create_order()->get_id();
 		$this->toggle_use_custom_table( true );
 
-		add_filter( 'wc_custom_order_table_automatic_migration', '__return_false' );
+		add_filter( 'wc_archive_order_table_automatic_migration', '__return_false' );
 
 		$order = wc_get_order( $order_id );
 
@@ -38,7 +38,7 @@ class OrderDataStoreTest extends TestCase {
 	}
 
 	public function test_delete() {
-		$instance = new WC_Order_Data_Store_Custom_Table();
+		$instance = new WC_Order_Data_Store_Archive_Table();
 		$order    = WC_Helper_Order::create_order();
 
 		$instance->delete( $order, array( 'force_delete' => false ) );
@@ -50,7 +50,7 @@ class OrderDataStoreTest extends TestCase {
 	}
 
 	public function test_delete_can_force_delete() {
-		$instance = new WC_Order_Data_Store_Custom_Table();
+		$instance = new WC_Order_Data_Store_Archive_Table();
 		$order    = WC_Helper_Order::create_order();
 		$order_id = $order->get_id();
 
@@ -77,7 +77,7 @@ class OrderDataStoreTest extends TestCase {
 	}
 
 	/**
-	 * @ticket https://github.com/liquidweb/woocommerce-custom-orders-table/issues/68
+	 * @ticket https://github.com/liquidweb/woocommerce-archive-orders-table/issues/68
 	 */
 	public function test_get_order_data_from_table_populates_customer_notes() {
 		$order = WC_Helper_Order::create_order();
@@ -108,7 +108,7 @@ class OrderDataStoreTest extends TestCase {
 	}
 
 	/**
-	 * @link https://github.com/liquidweb/woocommerce-custom-orders-table/issues/49
+	 * @link https://github.com/liquidweb/woocommerce-archive-orders-table/issues/49
 	 */
 	public function test_update_post_meta_for_existing_order_id() {
 		$order = WC_Helper_Order::create_order();
@@ -123,13 +123,13 @@ class OrderDataStoreTest extends TestCase {
 
 	public function test_get_order_id_by_order_key() {
 		$order = WC_Helper_Order::create_order();
-		$instance = new WC_Order_Data_Store_Custom_Table();
+		$instance = new WC_Order_Data_Store_Archive_Table();
 
 		$this->assertEquals( $order->get_id(), $instance->get_order_id_by_order_key( $order->get_order_key() ) );
 	}
 
 	public function test_search_orders_can_search_by_order_id() {
-		$instance = new WC_Order_Data_Store_Custom_Table();
+		$instance = new WC_Order_Data_Store_Archive_Table();
 
 		$this->assertEquals(
 			array( 123 ),
@@ -139,7 +139,7 @@ class OrderDataStoreTest extends TestCase {
 	}
 
 	public function test_search_orders_can_check_post_meta() {
-		$instance = new WC_Order_Data_Store_Custom_Table();
+		$instance = new WC_Order_Data_Store_Archive_Table();
 		$order    = WC_Helper_Order::create_order();
 		$term     = uniqid( 'search term ' );
 
@@ -169,7 +169,7 @@ class OrderDataStoreTest extends TestCase {
 	 * Same as test_search_orders_can_check_post_meta(), but the filter is never added.
 	 */
 	public function test_search_orders_only_checks_post_meta_if_specified() {
-		$instance = new WC_Order_Data_Store_Custom_Table();
+		$instance = new WC_Order_Data_Store_Archive_Table();
 		$order    = WC_Helper_Order::create_order();
 		$term     = uniqid( 'search term ' );
 
@@ -182,7 +182,7 @@ class OrderDataStoreTest extends TestCase {
 	}
 
 	public function test_search_orders_checks_table_for_product_item_matches() {
-		$instance = new WC_Order_Data_Store_Custom_Table();
+		$instance = new WC_Order_Data_Store_Archive_Table();
 		$product  = WC_Helper_Product::create_simple_product();
 		$order    = WC_Helper_Order::create_order();
 		$order->add_product( $product );
@@ -196,7 +196,7 @@ class OrderDataStoreTest extends TestCase {
 	}
 
 	public function test_search_orders_checks_table_for_product_item_matches_with_like_comparison() {
-		$instance = new WC_Order_Data_Store_Custom_Table();
+		$instance = new WC_Order_Data_Store_Archive_Table();
 		$product  = WC_Helper_Product::create_simple_product();
 		$product->set_name( 'Foo Bar Baz' );
 		$product->save();
@@ -220,7 +220,7 @@ class OrderDataStoreTest extends TestCase {
 
 		// Refresh the order.
 		$order   = wc_get_order( $order->get_id() );
-		$mapping = WooCommerce_Custom_Orders_Table::get_postmeta_mapping();
+		$mapping = WooCommerce_Archive_Orders_Table::get_postmeta_mapping();
 
 		$order->get_data_store()->populate_from_meta( $order );
 
@@ -241,7 +241,7 @@ class OrderDataStoreTest extends TestCase {
 		$this->toggle_use_custom_table( true );
 
 		$order   = wc_get_order( $order->get_id() );
-		$mapping = WooCommerce_Custom_Orders_Table::get_postmeta_mapping();
+		$mapping = WooCommerce_Archive_Orders_Table::get_postmeta_mapping();
 
 		$order->get_data_store()->populate_from_meta( $order, true );
 
@@ -307,7 +307,7 @@ class OrderDataStoreTest extends TestCase {
 		$this->assertEmpty(
 			array_diff(
 				array_keys( $meta ),
-				WooCommerce_Custom_Orders_Table::get_postmeta_mapping()
+				WooCommerce_Archive_Orders_Table::get_postmeta_mapping()
 			),
 			'The only post meta the order should have is what was backfilled from the custom table.'
 		);
@@ -338,7 +338,7 @@ class OrderDataStoreTest extends TestCase {
 	 * @param WC_Order $order The order object, passed by reference.
 	 */
 	protected function invoke_update_post_meta( &$order ) {
-		$instance = new WC_Order_Data_Store_Custom_Table();
+		$instance = new WC_Order_Data_Store_Archive_Table();
 		$method   = new ReflectionMethod( $instance, 'update_post_meta' );
 		$method->setAccessible( true );
 		$method->invokeArgs( $instance, array( &$order ) );

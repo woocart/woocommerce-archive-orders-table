@@ -70,7 +70,7 @@ Please note that WooCommerce's `master` branch will occasionally include failing
 
 #### Test coverage
 
-[![Coverage Status](https://coveralls.io/repos/github/liquidweb/woocommerce-custom-orders-table/badge.svg?branch=develop)](https://coveralls.io/github/liquidweb/woocommerce-custom-orders-table?branch=develop)
+[![Coverage Status](https://coveralls.io/repos/github/liquidweb/woocommerce-archive-orders-table/badge.svg?branch=develop)](https://coveralls.io/github/liquidweb/woocommerce-archive-orders-table?branch=develop)
 
 To generate a code coverage report (test coverage percentage as well as areas of untested or under-tested code that could pose risk), you run the following:
 

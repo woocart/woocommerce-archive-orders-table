@@ -2,8 +2,8 @@
 /**
  * Tests for the plugin installation.
  *
- * @package WooCommerce_Custom_Orders_Table
- * @author  Liquid Web
+ * @package WooCommerce_Archive_Orders_Table
+ * @author  WooCart
  */
 
 class InstallationTest extends TestCase {
@@ -18,8 +18,8 @@ class InstallationTest extends TestCase {
 
 		parent::setUp();
 
-		$wpdb->query( 'DROP TABLE IF EXISTS ' . esc_sql( wc_custom_order_table()->get_table_name() ) );
-		delete_option( WooCommerce_Custom_Orders_Table_Install::SCHEMA_VERSION_KEY );
+		$wpdb->query( 'DROP TABLE IF EXISTS ' . esc_sql( wc_archive_order_table()->get_table_name() ) );
+		delete_option( WooCommerce_Archive_Orders_Table_Install::SCHEMA_VERSION_KEY );
 	}
 
 	public function test_table_is_created_on_plugin_activation() {
@@ -32,42 +32,42 @@ class InstallationTest extends TestCase {
 	}
 
 	public function test_can_install_table() {
-		WooCommerce_Custom_Orders_Table_Install::activate();
+		WooCommerce_Archive_Orders_Table_Install::activate();
 
 		$this->assertTrue(
 			$this->orders_table_exists(),
 			'Upon activation, the table should be created.'
 		);
 		$this->assertNotEmpty(
-			get_option( WooCommerce_Custom_Orders_Table_Install::SCHEMA_VERSION_KEY ),
+			get_option( WooCommerce_Archive_Orders_Table_Install::SCHEMA_VERSION_KEY ),
 			'The schema version should be stored in the options table.'
 		);
 	}
 
 	public function test_returns_early_if_already_on_latest_schema_version() {
-		WooCommerce_Custom_Orders_Table_Install::activate();
+		WooCommerce_Archive_Orders_Table_Install::activate();
 
 		$this->assertFalse(
-			WooCommerce_Custom_Orders_Table_Install::activate(),
+			WooCommerce_Archive_Orders_Table_Install::activate(),
 			'The activate() method should return false if the schema versions match.'
 		);
 	}
 
 	public function test_can_upgrade_table() {
-		WooCommerce_Custom_Orders_Table_Install::activate();
+		WooCommerce_Archive_Orders_Table_Install::activate();
 
 		// Get the current schema version, then increment it.
-		$property = new ReflectionProperty( 'WooCommerce_Custom_Orders_Table_Install', 'table_version' );
+		$property = new ReflectionProperty( 'WooCommerce_Archive_Orders_Table_Install', 'table_version' );
 		$property->setAccessible( true );
 		$version = $property->getValue();
 		$property->setValue( $version + 1 );
 
 		// Run the activation script again.
-		WooCommerce_Custom_Orders_Table_Install::activate();
+		WooCommerce_Archive_Orders_Table_Install::activate();
 
 		$this->assertEquals(
 			$version + 1,
-			get_option( WooCommerce_Custom_Orders_Table_Install::SCHEMA_VERSION_KEY ),
+			get_option( WooCommerce_Archive_Orders_Table_Install::SCHEMA_VERSION_KEY ),
 			'The schema version should have been incremented.'
 		);
 	}
@@ -75,13 +75,13 @@ class InstallationTest extends TestCase {
 	public function test_current_schema_version_is_not_autoloaded() {
 		global $wpdb;
 
-		WooCommerce_Custom_Orders_Table_Install::activate();
+		WooCommerce_Archive_Orders_Table_Install::activate();
 
 		$this->assertEquals(
 			'no',
 			$wpdb->get_var( $wpdb->prepare(
 				"SELECT autoload FROM $wpdb->options WHERE option_name = %s LIMIT 1",
-				WooCommerce_Custom_Orders_Table_Install::SCHEMA_VERSION_KEY
+				WooCommerce_Archive_Orders_Table_Install::SCHEMA_VERSION_KEY
 			) ),
 			'The schema version should not be autoloaded.'
 		);
@@ -98,9 +98,9 @@ class InstallationTest extends TestCase {
 	public function test_database_indexes( $non_unique, $key_name, $column_name ) {
 		global $wpdb;
 
-		WooCommerce_Custom_Orders_Table_Install::activate();
+		WooCommerce_Archive_Orders_Table_Install::activate();
 
-		$table   = wc_custom_order_table()->get_table_name();
+		$table   = wc_archive_order_table()->get_table_name();
 		$indexes = $wpdb->get_results( "SHOW INDEX FROM $table", ARRAY_A );
 		$search  = array(
 			'Non_unique'  => $non_unique,
@@ -144,7 +144,7 @@ class InstallationTest extends TestCase {
 	 *           ["shipping_country", 2]
 	 *           ["currency", 3]
 	 *
-	 * @link https://github.com/liquidweb/woocommerce-custom-orders-table/issues/48
+	 * @link https://github.com/liquidweb/woocommerce-archive-orders-table/issues/48
 	 */
 	public function test_char_length( $column, $length ) {
 		$this->assert_column_has_type(
@@ -196,7 +196,7 @@ class InstallationTest extends TestCase {
 	 *           ["cart_hash", 32]
 	 *           ["amount", 100]
 	 *
-	 * @link https://github.com/liquidweb/woocommerce-custom-orders-table/issues/48
+	 * @link https://github.com/liquidweb/woocommerce-archive-orders-table/issues/48
 	 */
 	public function test_varchar_length( $column, $length ) {
 		$this->assert_column_has_type(
@@ -207,7 +207,7 @@ class InstallationTest extends TestCase {
 	}
 
 	/**
-	 * @ticket https://github.com/liquidweb/woocommerce-custom-orders-table/issues/89
+	 * @ticket https://github.com/liquidweb/woocommerce-archive-orders-table/issues/89
 	 */
 	public function test_user_agent_is_stored_in_text_column() {
 		$this->assert_column_has_type( 'customer_user_agent', 'text' );
@@ -228,7 +228,7 @@ class InstallationTest extends TestCase {
 		$this->assertSame(
 			$expected,
 			$wpdb->get_row( $wpdb->prepare(
-				'SHOW COLUMNS FROM ' . esc_sql( wc_custom_order_table()->get_table_name() ) . ' WHERE Field = %s',
+				'SHOW COLUMNS FROM ' . esc_sql( wc_archive_order_table()->get_table_name() ) . ' WHERE Field = %s',
 				$column
 			) )->Type,
 			$message
@@ -245,7 +245,7 @@ class InstallationTest extends TestCase {
 
 		return (bool) $wpdb->get_var( $wpdb->prepare(
 			'SELECT COUNT(*) FROM information_schema.tables WHERE table_name = %s LIMIT 1',
-			wc_custom_order_table()->get_table_name()
+			wc_archive_order_table()->get_table_name()
 		) );
 	}
 }

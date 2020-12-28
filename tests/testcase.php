@@ -2,8 +2,8 @@
 /**
  * Base test case for WooCommerce Custom Orders Table.
  *
- * @package WooCommerce_Custom_Orders_Table
- * @author  Liquid Web
+ * @package WooCommerce_Archive_Orders_Table
+ * @author  WooCart
  */
 
 class TestCase extends WC_Unit_Test_Case {
@@ -14,7 +14,7 @@ class TestCase extends WC_Unit_Test_Case {
 	 * @beforeClass
 	 */
 	public static function remove_table_version_from_options() {
-		delete_option( WooCommerce_Custom_Orders_Table_Install::SCHEMA_VERSION_KEY );
+		delete_option( WooCommerce_Archive_Orders_Table_Install::SCHEMA_VERSION_KEY );
 	}
 
 	/**
@@ -27,10 +27,10 @@ class TestCase extends WC_Unit_Test_Case {
 	protected function truncate_table() {
 		global $wpdb;
 
-		WooCommerce_Custom_Orders_Table_Install::activate();
+		WooCommerce_Archive_Orders_Table_Install::activate();
 
 		$wpdb->suppress_errors( false );
-		$wpdb->query( 'DELETE FROM ' . esc_sql( wc_custom_order_table()->get_table_name() ) );
+		$wpdb->query( 'DELETE FROM ' . esc_sql( wc_archive_order_table()->get_table_name() ) );
 	}
 
 	/**
@@ -40,13 +40,13 @@ class TestCase extends WC_Unit_Test_Case {
 	 */
 	protected function toggle_use_custom_table( $enabled = true ) {
 		if ( $enabled ) {
-			add_filter( 'woocommerce_customer_data_store', 'WooCommerce_Custom_Orders_Table::customer_data_store' );
-			add_filter( 'woocommerce_order_data_store', 'WooCommerce_Custom_Orders_Table::order_data_store' );
-			add_filter( 'woocommerce_order-refund_data_store', 'WooCommerce_Custom_Orders_Table::order_refund_data_store' );
+			add_filter( 'woocommerce_customer_data_store', 'WooCommerce_Archive_Orders_Table::customer_data_store' );
+			add_filter( 'woocommerce_order_data_store', 'WooCommerce_Archive_Orders_Table::order_data_store' );
+			add_filter( 'woocommerce_order-refund_data_store', 'WooCommerce_Archive_Orders_Table::order_refund_data_store' );
 		} else {
-			remove_filter( 'woocommerce_customer_data_store', 'WooCommerce_Custom_Orders_Table::customer_data_store' );
-			remove_filter( 'woocommerce_order_data_store', 'WooCommerce_Custom_Orders_Table::order_data_store' );
-			remove_filter( 'woocommerce_order-refund_data_store', 'WooCommerce_Custom_Orders_Table::order_refund_data_store' );
+			remove_filter( 'woocommerce_customer_data_store', 'WooCommerce_Archive_Orders_Table::customer_data_store' );
+			remove_filter( 'woocommerce_order_data_store', 'WooCommerce_Archive_Orders_Table::order_data_store' );
+			remove_filter( 'woocommerce_order-refund_data_store', 'WooCommerce_Archive_Orders_Table::order_refund_data_store' );
 		}
 	}
 
@@ -84,7 +84,7 @@ class TestCase extends WC_Unit_Test_Case {
 		}
 
 		return (int) $wpdb->get_var( $wpdb->prepare(
-			'SELECT COUNT(order_id) FROM ' . esc_sql( wc_custom_order_table()->get_table_name() ) . '
+			'SELECT COUNT(order_id) FROM ' . esc_sql( wc_archive_order_table()->get_table_name() ) . '
 			WHERE order_id IN (' . implode( ', ', array_fill( 0, count( (array) $order_ids ), '%d' ) ) . ')',
 		$order_ids ) );
 	}
@@ -102,7 +102,7 @@ class TestCase extends WC_Unit_Test_Case {
 		global $wpdb;
 
 		return $wpdb->get_row( $wpdb->prepare(
-			'SELECT * FROM ' . esc_sql( wc_custom_order_table()->get_table_name() ) . ' WHERE order_id = %d',
+			'SELECT * FROM ' . esc_sql( wc_archive_order_table()->get_table_name() ) . ' WHERE order_id = %d',
 			$order_id
 		), ARRAY_A );
 	}
@@ -111,7 +111,7 @@ class TestCase extends WC_Unit_Test_Case {
 	 * Emulate deactivating, then subsequently reactivating the plugin.
 	 */
 	protected static function reactivate_plugin() {
-		$plugin = basename( dirname( __DIR__ ) ) . '/woocommerce-custom-orders-table.php';
+		$plugin = basename( dirname( __DIR__ ) ) . '/woocommerce-archive-orders-table.php';
 
 		do_action( 'deactivate_' . $plugin, false );
 		do_action( 'activate_' . $plugin, false );

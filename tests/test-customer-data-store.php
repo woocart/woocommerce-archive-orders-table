@@ -1,9 +1,9 @@
 <?php
 /**
- * Tests for the WC_Customer_Data_Store_Custom_Table class.
+ * Tests for the WC_Customer_Data_Store_Archive_Table class.
  *
- * @package WooCommerce_Custom_Orders_Table
- * @author  Liquid Web
+ * @package WooCommerce_Archive_Orders_Table
+ * @author  WooCart
  */
 
 class CustomerDataStoreTest extends TestCase {
@@ -15,7 +15,7 @@ class CustomerDataStoreTest extends TestCase {
 	public function test_prefix_wc_status( $value, $expected ) {
 		$this->assertSame(
 			$expected,
-			WC_Customer_Data_Store_Custom_Table::prefix_wc_status( $value )
+			WC_Customer_Data_Store_Archive_Table::prefix_wc_status( $value )
 		);
 	}
 }

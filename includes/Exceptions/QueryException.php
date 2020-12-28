@@ -2,11 +2,11 @@
 /**
  * Query exceptions are thrown when errors occur while querying the database.
  *
- * @package WooCommerce_Custom_Orders_Table
- * @author  Liquid Web
+ * @package WooCommerce_Archive_Orders_Table
+ * @author  WooCart
  */
 
-namespace LiquidWeb\WooCommerceCustomOrdersTable\Exceptions;
+namespace WooCart\WooCommerceArchiveOrdersTable\Exceptions;
 
 /**
  * Exception that indicates issues during data migration.
