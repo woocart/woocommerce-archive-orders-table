@@ -65,16 +65,22 @@ class WC_Order_Data_Store_Custom_Table extends WC_Order_Data_Store_CPT {
 			$order->set_props( $data );
 		} else {
 			/**
-			 * Toggle the ability for WooCommerce Custom Orders Table to automatically migrate orders.
-			 *
-			 * @param bool $migrate Whether or not orders should automatically be migrated once they
-			 *                      have been loaded.
+			 * Removed automatic migration of data to custom table.
+			 * Instead, we try to fetch metadata normally from the table.
 			 */
-			$migrate = apply_filters( 'wc_custom_order_table_automatic_migration', true );
+			$id = $order->get_id();
+			$data = array();
 
-			if ( $migrate ) {
-				$this->populate_from_meta( $order );
+			// Loop over internal postmeta properties
+			foreach ( WooCommerce_Custom_Orders_Table::get_postmeta_mapping() as $key => $value ) {
+				$data[$key] = get_post_meta( $id, $value, true );
 			}
+
+			// Get post for additional notes passed by the customer
+			$post = get_post( $id );
+			$data['customer_note'] = $post->post_excerpt;
+
+			$order->set_props( $data );
 		}
 	}
 
