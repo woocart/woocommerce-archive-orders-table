@@ -52,7 +52,7 @@ class WC_Customer_Data_Store_Custom_Table extends WC_Customer_Data_Store {
 				// phpcs:disable WordPress.DB.PreparedSQL.NotPrepared
 				"SELECT posts.ID
 				FROM $wpdb->posts AS posts
-				LEFT JOIN {$wpdb->postmeta} AS meta on posts.ID = meta.post_id
+				INNER JOIN {$wpdb->postmeta} AS meta on posts.ID = meta.post_id
 				WHERE meta.meta_key = '_customer_user'
 				AND   meta.meta_value = '" . esc_sql( $customer->get_id() ) . "'
 				AND   posts.post_type = 'shop_order'
