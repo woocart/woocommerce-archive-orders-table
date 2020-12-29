@@ -52,9 +52,6 @@ class WC_Order_Data_Store_Custom_Table extends WC_Order_Data_Store_CPT {
 	/**
 	 * Read order data from the custom orders table.
 	 *
-	 * If the order does not yet exist, the plugin will attempt to migrate it automatically. This
-	 * behavior can be modified via the "wc_custom_order_table_automatic_migration" filter.
-	 *
 	 * @param WC_Order $order       The order object, passed by reference.
 	 * @param object   $post_object The post object.
 	 */
