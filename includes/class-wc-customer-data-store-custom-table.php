@@ -13,6 +13,94 @@
 class WC_Customer_Data_Store_Custom_Table extends WC_Customer_Data_Store {
 
 	/**
+	 * Gets the customers last order by querying both postmeta and
+	 * the archived orders table.
+	 *
+	 * @param WC_Customer $customer Customer object.
+	 * @return WC_Order|false
+	 */
+	public function get_last_order( &$customer ) {
+		// Check postmeta first
+		$last_order = $this->get_last_order_meta( $customer );
+
+		if ( $last_order ) {
+			return $last_order;
+		}
+
+		// $last_order is false, so we look for last_order in archive
+		return $this->get_last_order_archive( $customer );
+	}
+
+	/**
+	 * Gets the customers last order from postmeta.
+	 *
+	 * @since 3.0.0
+	 * @param WC_Customer $customer Customer object.
+	 * @return WC_Order|false
+	 */
+	public function get_last_order_meta( $customer ) {
+		$last_order = apply_filters(
+			'woocommerce_customer_get_last_order',
+			get_user_meta( $customer->get_id(), '_last_order', true ),
+			$customer
+		);
+
+		if ( '' === $last_order ) {
+			global $wpdb;
+
+			$last_order = $wpdb->get_var(
+				// phpcs:disable WordPress.DB.PreparedSQL.NotPrepared
+				"SELECT posts.ID
+				FROM $wpdb->posts AS posts
+				LEFT JOIN {$wpdb->postmeta} AS meta on posts.ID = meta.post_id
+				WHERE meta.meta_key = '_customer_user'
+				AND   meta.meta_value = '" . esc_sql( $customer->get_id() ) . "'
+				AND   posts.post_type = 'shop_order'
+				AND   posts.post_status IN ( '" . implode( "','", array_map( 'esc_sql', array_keys( wc_get_order_statuses() ) ) ) . "' )
+				ORDER BY posts.ID DESC"
+				// phpcs:enable
+			);
+			update_user_meta( $customer->get_id(), '_last_order', $last_order );
+		}
+
+		if ( ! $last_order ) {
+			return false;
+		}
+
+		return wc_get_order( absint( $last_order ) );
+	}
+
+	/**
+	 * Gets the customers last order from archived orders table.
+	 *
+	 * @global $wpdb
+	 *
+	 * @param WC_Customer $customer The WC_Customer object.
+	 * @return WC_Order|false The last order from this customer, or FALSE if the customer has not
+	 *                        made an order.
+	 */
+	public function get_last_order_archive( $customer ) {
+		global $wpdb;
+
+		$table      = wc_custom_order_table()->get_table_name();
+		$statuses   = wc_get_order_statuses();
+		$last_order = $wpdb->get_var(
+			$wpdb->prepare(
+				"
+				SELECT posts.ID FROM $wpdb->posts AS posts
+				LEFT JOIN " . esc_sql( $table ) . " AS meta on posts.ID = meta.order_id
+				WHERE meta.customer_id = %d
+				AND   posts.post_type  = 'shop_order'
+				AND   posts.post_status IN (" . implode( ', ', array_fill( 0, count( $statuses ), '%s' ) ) . ')
+				ORDER BY posts.ID DESC LIMIT 1',
+				array_merge( array( $customer->get_id() ), array_keys( $statuses ) )
+			)
+		);
+
+		return $last_order ? wc_get_order( (int) $last_order ) : false;
+	}
+
+	/**
 	 * Register callbacks when the data store is first instantiated.
 	 */
 	public static function add_hooks() {
