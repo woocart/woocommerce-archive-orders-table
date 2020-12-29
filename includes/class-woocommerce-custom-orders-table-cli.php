@@ -330,6 +330,8 @@ class WooCommerce_Custom_Orders_Table_CLI extends WP_CLI_Command {
 
 	/**
 	 * Build a SQL query to get posts that require migration.
+	 * Orders not marked as "completed" or the ones less than 7 days old
+	 * are skipped from migration.
 	 *
 	 * @global $wpdb
 	 *
@@ -350,6 +352,8 @@ class WooCommerce_Custom_Orders_Table_CLI extends WP_CLI_Command {
 			FROM {$wpdb->posts} p
 			LEFT JOIN {$order_table} o ON p.ID = o.order_id
 			WHERE p.post_type IN (" . implode( ', ', array_fill( 0, count( $order_types ), '%s' ) ) . ')
+			AND p.post_status = "wc-completed"
+			AND p.post_modified >= DATE_SUB(SYSDATE(), INTERVAL 7 DAY)
 			AND o.order_id IS NULL
 		';
 		$parameters  = $order_types;
