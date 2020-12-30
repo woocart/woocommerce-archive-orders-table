@@ -23,12 +23,12 @@
         "php": ">=5.6|>=7.0"
     },
     "require-dev": {
-        "dealerdirect/phpcodesniffer-composer-installer": "^0.5",
-        "phpcompatibility/php-compatibility": "^9.0",
-        "phpunit/phpunit": "^6.5",
+        "dealerdirect/phpcodesniffer-composer-installer": ">=0.5",
+        "phpcompatibility/php-compatibility": ">=9.0",
+        "phpunit/phpunit": ">=6.5",
         "woocommerce/woocommerce-git-hooks": "*",
-        "woocommerce/woocommerce-sniffs": "^0.0.9",
-        "wp-coding-standards/wpcs": "^2.2.0"
+        "woocommerce/woocommerce-sniffs": ">=0.0.9",
+        "wp-coding-standards/wpcs": ">=2.2.0"
     },
     "autoload-dev": {
         "classmap": [
