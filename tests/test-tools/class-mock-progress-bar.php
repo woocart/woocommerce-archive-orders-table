@@ -3,7 +3,7 @@
  * Mock CLI progress bar for testing WP-CLI.
  *
  * @package WooCommerce_Custom_Orders_Table
- * @author  Liquid Web
+ * |author  Liquid Web
  */
 
 class MockProgressBar {

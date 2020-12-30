@@ -3,7 +3,7 @@
  * CLI Tool for migrating order data to/from custom table.
  *
  * @package WooCommerce_Custom_Orders_Table
- * @author  Liquid Web
+ * |author  Liquid Web
  */
 
 use LiquidWeb\WooCommerceCustomOrdersTable\Util\QueryIterator;

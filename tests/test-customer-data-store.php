@@ -3,7 +3,7 @@
  * Tests for the WC_Customer_Data_Store_Custom_Table class.
  *
  * @package WooCommerce_Custom_Orders_Table
- * @author  Liquid Web
+ * |author  Liquid Web
  */
 
 class CustomerDataStoreTest extends TestCase {

@@ -3,7 +3,7 @@
  * Tests for the WP-CLI commands.
  *
  * @package WooCommerce_Custom_Orders_Table
- * @author  Liquid Web
+ * |author  Liquid Web
  */
 
 /**

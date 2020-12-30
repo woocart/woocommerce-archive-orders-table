@@ -8,7 +8,7 @@
  * @link https://github.com/wp-cli/wp-cli/blob/master/php/WP_CLI/Iterators/Query.php
  *
  * @package WooCommerce_Custom_Orders_Table
- * @author  Liquid Web
+ * |author  Liquid Web
  */
 
 namespace LiquidWeb\WooCommerceCustomOrdersTable\Util;

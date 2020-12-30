@@ -3,7 +3,7 @@
  * Dummy test class for WP_CLI_Command.
  *
  * @package WooCommerce_Custom_Orders_Table
- * @author  Liquid Web
+ * |author  Liquid Web
  */
 
 use PHPUnit\Framework\Assert;

@@ -3,7 +3,7 @@
  * Tests for the core WooCommerce_Custom_Orders_Table class.
  *
  * @package WooCommerce_Custom_Orders_Table
- * @author  Liquid Web
+ * |author  Liquid Web
  */
 
 class CoreTest extends TestCase {

@@ -6,7 +6,7 @@
 	<config name="testVersion" value="5.6-"/>
 
 	<rule ref="WooCommerce-Core">
-		<!-- Let the plugin files have @author tags. -->
+		<!-- Let the plugin files have |author tags. -->
 		<exclude name="Core.Commenting.CommentTags.AuthorTag" />
 
 		<!-- WooCommerce packages use PSR-4 autoloading, so don't worry about WP conventions. -->

@@ -3,7 +3,7 @@
  * Tests for the Migration utility.
  *
  * @package WooCommerce_Custom_Orders_Table
- * @author  Liquid Web
+ * |author  Liquid Web
  */
 
 namespace Tests\Util;
