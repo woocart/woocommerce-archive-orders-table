@@ -146,8 +146,66 @@ class WooCommerce_Custom_Orders_Table_CLI extends WP_CLI_Command {
 		update_option( $this->option_name, $metakeys_list );
 
 		return WP_CLI::success(
-			esc_html__( 'Metakeys list has been updated in the database. Run populate command to create columns for the additional keys.', 'woocommerce-custom-orders-table' )
+			esc_html__( 'Meta keys list has been updated in the database. Run populate command to create columns for the additional keys.', 'woocommerce-custom-orders-table' )
 		);
+	}
+
+	/**
+	 * Create columns in the `woocommerce_orders` table for the additional meta keys.
+	 *
+	 * ## EXAMPLES
+	 *      wp wc orders-table populate
+	 *
+	 * @global $wpdb
+	 *
+	 * @return WP_CLI
+	 */
+	public function populate() {
+		global $wpdb;
+
+		$metakeys_list = get_option( $this->option_name );
+
+		if ( ! $metakeys_list ) {
+			return WP_CLI::error(
+				esc_html__( 'No additional meta keys found in the database.', 'woocommerce-custom-orders-table' )
+			);
+		}
+
+		$order_table = wc_custom_order_table()->get_table_name();
+
+		// Loop over meta keys and check for existing column in the database.
+		foreach ( $metakeys_list as $col_name => $col_length ) {
+			$column = $wpdb->get_col(
+				$wpdb->prepare(
+					// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+					"SHOW COLUMNS FROM {$order_table} LIKE %s",
+					$col_name
+				)
+			);
+
+			// Column already exists.
+			if ( $column ) {
+				WP_CLI::log(
+					$col_name . esc_html__( ' column already exists in the database.', 'woocommerce-custom-orders-table' )
+				);
+
+				continue;
+			}
+
+			// Alter table to add column.
+			$query = $wpdb->query(
+				$wpdb->prepare(
+					"ALTER TABLE {$order_table} ADD COLUMN `{$col_name}` varchar(%d)",
+					$col_length
+				)
+			);
+
+			if ( ! $query ) {
+				WP_CLI::error(
+					esc_html__( 'There was an error while adding column to the table.', 'woocommerce-custom-orders-table' )
+				);
+			}
+		}
 	}
 
 	/**
