@@ -163,6 +163,7 @@ class WooCommerce_Custom_Orders_Table_CLI extends WP_CLI_Command {
 	public function populate() {
 		global $wpdb;
 
+		$cols_added    = 0;
 		$metakeys_list = get_option( $this->option_name );
 
 		if ( ! $metakeys_list ) {
@@ -186,7 +187,11 @@ class WooCommerce_Custom_Orders_Table_CLI extends WP_CLI_Command {
 			// Column already exists.
 			if ( $column ) {
 				WP_CLI::log(
-					$col_name . esc_html__( ' column already exists in the database.', 'woocommerce-custom-orders-table' )
+					sprintf(
+						/* translators: %s: column name */
+						esc_html__( '`%s` column already exists in the database.', 'woocommerce-custom-orders-table' ),
+						$col_name
+					)
 				);
 
 				continue;
@@ -202,10 +207,27 @@ class WooCommerce_Custom_Orders_Table_CLI extends WP_CLI_Command {
 
 			if ( ! $query ) {
 				WP_CLI::error(
-					esc_html__( 'There was an error while adding column to the table.', 'woocommerce-custom-orders-table' )
+					sprintf(
+						/* translators: %s: column name */
+						esc_html__( 'There was an error while adding `%s` column to the table.', 'woocommerce-custom-orders-table' ),
+						$col_name
+					)
 				);
+
+				continue;
 			}
+
+			++$cols_added;
 		}
+
+		// Add a message at the end.
+		WP_CLI::success(
+			sprintf(
+				/* translators: %s: column name */
+				esc_html__( '%s columns added to the table.', 'woocommerce-custom-orders-table' ),
+				$cols_added
+			)
+		);
 	}
 
 	/**
