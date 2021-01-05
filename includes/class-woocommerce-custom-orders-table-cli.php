@@ -21,6 +21,13 @@ class WooCommerce_Custom_Orders_Table_CLI extends WP_CLI_Command {
 	protected $skipped_ids = array();
 
 	/**
+	 * Option name for storing list of additional metakeys.
+	 *
+	 * @var string
+	 */
+	protected $option_name = 'wc_woocart_archive_metakeys';
+
+	/**
 	 * Bootstrap the WP-CLI command.
 	 */
 	public function __construct() {
@@ -81,10 +88,13 @@ class WooCommerce_Custom_Orders_Table_CLI extends WP_CLI_Command {
 		$order_ids = $wpdb->get_col( $query );
 
 		if ( empty( $order_ids ) ) {
-			return WP_CLI::log(
+			return WP_CLI::error(
 				esc_html__( 'No orders exist. They are required to check for additional meta keys.', 'woocommerce-archive-orders-table' )
 			);
 		}
+
+		// Fetch stored metakeys
+		$existing_keys = get_option( $this->option_name, array() );
 
 		// Loop over order_ids to build a list of meta_keys
 		$metakeys_list = array();
@@ -94,6 +104,23 @@ class WooCommerce_Custom_Orders_Table_CLI extends WP_CLI_Command {
 
 			foreach ( $meta_data as $meta_key => $meta_value ) {
 				if ( in_array( $meta_key, array_values( WooCommerce_Custom_Orders_Table::get_postmeta_mapping() ) ) ) {
+					continue;
+				}
+
+				// Check for key within blacklisted keys
+				if ( in_array( $meta_key, WooCommerce_Custom_Orders_Table::get_blacklisted_keys() ) ) {
+					continue;
+				}
+
+				/**
+				 * Remove _ from the starting of metakey
+				 * We do this over here since keys are stored in the DB without _
+				 * So, to check against existing keys, we need _ removed from the key name
+				 */
+				$meta_key = ltrim( $meta_key, '_' );
+
+				// Check if the key already exists
+				if ( in_array( $meta_key, array_keys( $existing_keys ) ) ) {
 					continue;
 				}
 
@@ -116,6 +143,12 @@ class WooCommerce_Custom_Orders_Table_CLI extends WP_CLI_Command {
 			);
 		}
 
+		// Store additional meta_keys in database
+		update_option( $this->option_name, $metakeys_list );
+
+		return WP_CLI::success(
+			esc_html__( 'Metakeys list has been updated in the database. Run populate command to create columns for the additional keys.', 'woocommerce-archive-orders-table' )
+		);
 	}
 
 	/**

@@ -281,4 +281,16 @@ class WooCommerce_Custom_Orders_Table {
 	public static function order_refund_data_store() {
 		return 'WC_Order_Refund_Data_Store_Custom_Table';
 	}
+
+	/**
+	 * List of keys which are not required to be migrated.
+	 *
+	 * @return array List of blacklisted keys.
+	 */
+	public static function get_blacklisted_keys() : array {
+		return array(
+			'_edit_lock',
+			'_edit_last'
+		);
+	}
 }
