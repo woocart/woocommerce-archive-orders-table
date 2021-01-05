@@ -69,46 +69,45 @@ class WooCommerce_Custom_Orders_Table_CLI extends WP_CLI_Command {
 	 * List and save all additional postmeta keys for `shop_order` post type.
 	 *
 	 * ## EXAMPLES
-	 *		wp wc orders-table optimize
+	 *      wp wc orders-table optimize
 	 *
 	 * @global $wpdb
 	 *
-	 * @return void
+	 * @return WP_CLI
 	 */
 	public function optimize() {
 		global $wpdb;
 
 		$order_types = wc_get_order_types( 'reports' );
-		$query       = "
-			SELECT p.ID
-			FROM {$wpdb->posts} p
-			WHERE p.post_type IN (" . implode( ', ', array_fill( 0, count( $order_types ), '%s' ) ) . ") LIMIT 0, 100
-		";
-		$query = $wpdb->prepare( $query, $order_types );
-		$order_ids = $wpdb->get_col( $query );
+		$order_ids   = $wpdb->get_col(
+			$wpdb->prepare(
+				"SELECT p.ID FROM {$wpdb->posts} p WHERE p.post_type IN (" . implode( ', ', array_fill( 0, count( $order_types ), '%s' ) ) . ') LIMIT 0, 100',
+				$order_types
+			)
+		);
 
 		if ( empty( $order_ids ) ) {
 			return WP_CLI::error(
-				esc_html__( 'No orders exist. They are required to check for additional meta keys.', 'woocommerce-archive-orders-table' )
+				esc_html__( 'No orders exist. They are required to check for additional meta keys.', 'woocommerce-custom-orders-table' )
 			);
 		}
 
-		// Fetch stored metakeys
+		// Fetch stored metakeys.
 		$existing_keys = get_option( $this->option_name, array() );
 
-		// Loop over order_ids to build a list of meta_keys
+		// Loop over order_ids to build a list of meta_keys.
 		$metakeys_list = array();
 
 		foreach ( $order_ids as $order ) {
 			$meta_data = get_post_meta( $order );
 
 			foreach ( $meta_data as $meta_key => $meta_value ) {
-				if ( in_array( $meta_key, array_values( WooCommerce_Custom_Orders_Table::get_postmeta_mapping() ) ) ) {
+				if ( in_array( $meta_key, array_values( WooCommerce_Custom_Orders_Table::get_postmeta_mapping() ), true ) ) {
 					continue;
 				}
 
-				// Check for key within blacklisted keys
-				if ( in_array( $meta_key, WooCommerce_Custom_Orders_Table::get_blacklisted_keys() ) ) {
+				// Check for key within blacklisted keys.
+				if ( in_array( $meta_key, WooCommerce_Custom_Orders_Table::get_blacklisted_keys(), true ) ) {
 					continue;
 				}
 
@@ -119,35 +118,35 @@ class WooCommerce_Custom_Orders_Table_CLI extends WP_CLI_Command {
 				 */
 				$meta_key = ltrim( $meta_key, '_' );
 
-				// Check if the key already exists
-				if ( in_array( $meta_key, array_keys( $existing_keys ) ) ) {
+				// Check if the key already exists.
+				if ( in_array( $meta_key, array_keys( $existing_keys ), true ) ) {
 					continue;
 				}
 
-				if ( ! isset( $metakeys_list[$meta_key] ) ) {
-					$metakeys_list[$meta_key] = strlen( $meta_value[0] );
+				if ( ! isset( $metakeys_list[ $meta_key ] ) ) {
+					$metakeys_list[ $meta_key ] = strlen( $meta_value[0] );
 					continue;
 				}
 
-				// Check if the current value is lower than the new value
-				if ( strlen( $metakeys_list[$meta_key] ) < strlen( $meta_value[0] ) ) {
-					$metakeys_list[$meta_key] = strlen( $meta_value[0] );
+				// Check if the current value is lower than the new value.
+				if ( strlen( $metakeys_list[ $meta_key ] ) < strlen( $meta_value[0] ) ) {
+					$metakeys_list[ $meta_key ] = strlen( $meta_value[0] );
 				}
 			}
 		}
 
-		// Check if we have additional meta_keys
+		// Check if we have additional meta_keys.
 		if ( ! count( $metakeys_list ) > 0 ) {
 			return WP_CLI::log(
-				esc_html__( 'No additional meta keys were found.', 'woocommerce-archive-orders-table' )
+				esc_html__( 'No additional meta keys were found.', 'woocommerce-custom-orders-table' )
 			);
 		}
 
-		// Store additional meta_keys in database
+		// Store additional meta_keys in database.
 		update_option( $this->option_name, $metakeys_list );
 
 		return WP_CLI::success(
-			esc_html__( 'Metakeys list has been updated in the database. Run populate command to create columns for the additional keys.', 'woocommerce-archive-orders-table' )
+			esc_html__( 'Metakeys list has been updated in the database. Run populate command to create columns for the additional keys.', 'woocommerce-custom-orders-table' )
 		);
 	}
 

@@ -20,14 +20,14 @@ class WC_Customer_Data_Store_Custom_Table extends WC_Customer_Data_Store {
 	 * @return WC_Order|false
 	 */
 	public function get_last_order( &$customer ) {
-		// Check postmeta first
+		// Check postmeta first.
 		$last_order = $this->get_last_order_meta( $customer );
 
 		if ( $last_order ) {
 			return $last_order;
 		}
 
-		// $last_order is false, so we look for last_order in archive
+		// $last_order is false, so we look for last_order in archive.
 		return $this->get_last_order_archive( $customer );
 	}
 

@@ -65,16 +65,16 @@ class WC_Order_Data_Store_Custom_Table extends WC_Order_Data_Store_CPT {
 			 * Removed automatic migration of data to custom table.
 			 * Instead, we try to fetch metadata normally from the table.
 			 */
-			$id = $order->get_id();
+			$id   = $order->get_id();
 			$data = array();
 
-			// Loop over internal postmeta properties
+			// Loop over internal postmeta properties.
 			foreach ( WooCommerce_Custom_Orders_Table::get_postmeta_mapping() as $key => $value ) {
-				$data[$key] = get_post_meta( $id, $value, true );
+				$data[ $key ] = get_post_meta( $id, $value, true );
 			}
 
-			// Get post for additional notes passed by the customer
-			$post = get_post( $id );
+			// Get post for additional notes passed by the customer.
+			$post                  = get_post( $id );
 			$data['customer_note'] = $post->post_excerpt;
 
 			$order->set_props( $data );

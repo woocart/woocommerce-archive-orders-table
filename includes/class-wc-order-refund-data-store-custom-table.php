@@ -30,16 +30,16 @@ class WC_Order_Refund_Data_Store_Custom_Table extends WC_Order_Refund_Data_Store
 			 * Removed automatic migration of data to custom table.
 			 * Instead, we try to fetch metadata normally from the table.
 			 */
-			$id = $refund->get_id();
+			$id   = $refund->get_id();
 			$data = array();
 
-			// Loop over internal postmeta properties
+			// Loop over internal postmeta properties.
 			foreach ( WooCommerce_Custom_Orders_Table::get_postmeta_mapping() as $key => $value ) {
-				$data[$key] = get_post_meta( $id, $value, true );
+				$data[ $key ] = get_post_meta( $id, $value, true );
 			}
 
-			// Get post for additional notes passed by the customer
-			$post = get_post( $id );
+			// Get post for additional notes passed by the customer.
+			$post                  = get_post( $id );
 			$data['customer_note'] = $post->post_excerpt;
 
 			$refund->set_props( $data );

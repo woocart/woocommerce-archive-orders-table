@@ -287,10 +287,10 @@ class WooCommerce_Custom_Orders_Table {
 	 *
 	 * @return array List of blacklisted keys.
 	 */
-	public static function get_blacklisted_keys() : array {
+	public static function get_blacklisted_keys() {
 		return array(
 			'_edit_lock',
-			'_edit_last'
+			'_edit_last',
 		);
 	}
 }
