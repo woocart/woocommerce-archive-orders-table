@@ -184,6 +184,21 @@ class WC_Order_Data_Store_Custom_Table extends WC_Order_Data_Store_CPT {
 			'prices_include_tax'   => wc_bool_to_string( $order->get_prices_include_tax( 'edit' ) ),
 		);
 
+		// Add additional metakeys data.
+		$extra_metakeys   = get_option( WC_CUSTOM_ORDER_TABLE_OPTION, array() );
+		$extra_order_data = $order->get_meta_data();
+
+		if ( $extra_metakeys ) {
+			// Loop over keys to find the values and add them to $order_data array.
+			foreach ( $extra_order_data as $single_order_data ) {
+				if ( ! in_array( $single_order_data->key, array_keys( $extra_metakeys ), true ) ) {
+					continue;
+				}
+
+				$order_data[ $single_order_data->key ] = $single_order_data->value;
+			}
+		}
+
 		// Convert dates to timestamps, if they exist.
 		foreach ( array( 'date_completed', 'date_paid' ) as $date ) {
 			if ( $order_data[ $date ] instanceof WC_DateTime ) {

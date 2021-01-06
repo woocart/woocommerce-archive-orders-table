@@ -21,13 +21,6 @@ class WooCommerce_Custom_Orders_Table_CLI extends WP_CLI_Command {
 	protected $skipped_ids = array();
 
 	/**
-	 * Option name for storing list of additional metakeys.
-	 *
-	 * @var string
-	 */
-	protected $option_name = 'wc_woocart_archive_metakeys';
-
-	/**
 	 * Bootstrap the WP-CLI command.
 	 */
 	public function __construct() {
@@ -93,7 +86,7 @@ class WooCommerce_Custom_Orders_Table_CLI extends WP_CLI_Command {
 		}
 
 		// Fetch stored metakeys.
-		$existing_keys = get_option( $this->option_name, array() );
+		$existing_keys = get_option( WC_CUSTOM_ORDER_TABLE_OPTION, array() );
 
 		// Loop over order_ids to build a list of meta_keys.
 		$metakeys_list = array();
@@ -110,13 +103,6 @@ class WooCommerce_Custom_Orders_Table_CLI extends WP_CLI_Command {
 				if ( in_array( $meta_key, WooCommerce_Custom_Orders_Table::get_blacklisted_keys(), true ) ) {
 					continue;
 				}
-
-				/**
-				 * Remove _ from the starting of metakey
-				 * We do this over here since keys are stored in the DB without _
-				 * So, to check against existing keys, we need _ removed from the key name
-				 */
-				$meta_key = ltrim( $meta_key, '_' );
 
 				// Check if the key already exists.
 				if ( in_array( $meta_key, array_keys( $existing_keys ), true ) ) {
@@ -143,10 +129,10 @@ class WooCommerce_Custom_Orders_Table_CLI extends WP_CLI_Command {
 		}
 
 		// Store additional meta_keys in database.
-		update_option( $this->option_name, $metakeys_list );
+		update_option( WC_CUSTOM_ORDER_TABLE_OPTION, $metakeys_list );
 
 		return WP_CLI::success(
-			esc_html__( 'Meta keys list has been updated in the database. Run populate command to create columns for the additional keys.', 'woocommerce-custom-orders-table' )
+			esc_html__( 'Meta keys list has been updated in the database. Run `wp wc orders-table populate` command to create columns for the additional keys.', 'woocommerce-custom-orders-table' )
 		);
 	}
 
@@ -164,7 +150,7 @@ class WooCommerce_Custom_Orders_Table_CLI extends WP_CLI_Command {
 		global $wpdb;
 
 		$cols_added    = 0;
-		$metakeys_list = get_option( $this->option_name );
+		$metakeys_list = get_option( WC_CUSTOM_ORDER_TABLE_OPTION );
 
 		if ( ! $metakeys_list ) {
 			return WP_CLI::error(
@@ -525,7 +511,7 @@ class WooCommerce_Custom_Orders_Table_CLI extends WP_CLI_Command {
 			LEFT JOIN {$order_table} o ON p.ID = o.order_id
 			WHERE p.post_type IN (" . implode( ', ', array_fill( 0, count( $order_types ), '%s' ) ) . ')
 			AND p.post_status = "wc-completed"
-			AND p.post_modified >= DATE_SUB(SYSDATE(), INTERVAL 7 DAY)
+			AND p.post_modified >= DATE_SUB(SYSDATE(), INTERVAL 30 DAY)
 			AND o.order_id IS NULL
 		';
 		$parameters  = $order_types;

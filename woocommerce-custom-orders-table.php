@@ -22,6 +22,9 @@ defined( 'ABSPATH' ) || exit;
 define( 'WC_CUSTOM_ORDER_TABLE_URL', plugin_dir_url( __FILE__ ) );
 define( 'WC_CUSTOM_ORDER_TABLE_PATH', plugin_dir_path( __FILE__ ) );
 
+// Database option name.
+define( 'WC_CUSTOM_ORDER_TABLE_OPTION', 'wc_woocart_archive_metakeys' );
+
 /**
  * Autoloader for plugin files.
  *

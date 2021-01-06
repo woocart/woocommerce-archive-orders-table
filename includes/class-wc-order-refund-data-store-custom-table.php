@@ -102,6 +102,21 @@ class WC_Order_Refund_Data_Store_Custom_Table extends WC_Order_Refund_Data_Store
 			'refunded_by'        => $refund->get_refunded_by( 'edit' ),
 		);
 
+		// Add additional metakeys data.
+		$extra_metakeys    = get_option( WC_CUSTOM_ORDER_TABLE_OPTION, array() );
+		$extra_refund_data = $refund->get_meta_data();
+
+		if ( $extra_metakeys ) {
+			// Loop over keys to find the values and add them to $refund_data array.
+			foreach ( $extra_refund_data as $single_refund_data ) {
+				if ( ! in_array( $single_refund_data->key, array_keys( $extra_metakeys ), true ) ) {
+					continue;
+				}
+
+				$order_data[ $single_refund_data->key ] = $single_refund_data->value;
+			}
+		}
+
 		// Insert or update the database record.
 		if ( ! wc_custom_order_table()->row_exists( $refund_data['order_id'] ) ) {
 			$inserted = $wpdb->insert( $table, $refund_data ); // WPCS: DB call OK.
