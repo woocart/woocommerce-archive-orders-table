@@ -59,6 +59,164 @@ class WooCommerce_Custom_Orders_Table_CLI extends WP_CLI_Command {
 	}
 
 	/**
+	 * List and save all additional postmeta keys for `shop_order` post type.
+	 *
+	 * ## EXAMPLES
+	 *      wp wc orders-table optimize
+	 *
+	 * @global $wpdb
+	 *
+	 * @return WP_CLI
+	 */
+	public function optimize() {
+		global $wpdb;
+
+		$order_types = wc_get_order_types( 'reports' );
+		$order_ids   = $wpdb->get_col(
+			$wpdb->prepare(
+				"SELECT p.ID FROM {$wpdb->posts} p WHERE p.post_type IN (" . implode( ', ', array_fill( 0, count( $order_types ), '%s' ) ) . ') LIMIT 0, 100',
+				$order_types
+			)
+		);
+
+		if ( empty( $order_ids ) ) {
+			return WP_CLI::error(
+				esc_html__( 'No orders exist. They are required to check for additional meta keys.', 'woocommerce-custom-orders-table' )
+			);
+		}
+
+		// Fetch stored metakeys.
+		$existing_keys = get_option( WC_CUSTOM_ORDER_TABLE_OPTION, array() );
+
+		// Loop over order_ids to build a list of meta_keys.
+		$metakeys_list = array();
+
+		foreach ( $order_ids as $order ) {
+			$meta_data = get_post_meta( $order );
+
+			foreach ( $meta_data as $meta_key => $meta_value ) {
+				if ( in_array( $meta_key, array_values( WooCommerce_Custom_Orders_Table::get_postmeta_mapping() ), true ) ) {
+					continue;
+				}
+
+				// Check for key within blacklisted keys.
+				if ( in_array( $meta_key, WooCommerce_Custom_Orders_Table::get_blacklisted_keys(), true ) ) {
+					continue;
+				}
+
+				// Check if the key already exists.
+				if ( in_array( $meta_key, array_keys( $existing_keys ), true ) ) {
+					continue;
+				}
+
+				if ( ! isset( $metakeys_list[ $meta_key ] ) ) {
+					$metakeys_list[ $meta_key ] = strlen( $meta_value[0] );
+					continue;
+				}
+
+				// Check if the current value is lower than the new value.
+				if ( strlen( $metakeys_list[ $meta_key ] ) < strlen( $meta_value[0] ) ) {
+					$metakeys_list[ $meta_key ] = strlen( $meta_value[0] );
+				}
+			}
+		}
+
+		// Check if we have additional meta_keys.
+		if ( ! count( $metakeys_list ) > 0 ) {
+			return WP_CLI::log(
+				esc_html__( 'No additional meta keys were found.', 'woocommerce-custom-orders-table' )
+			);
+		}
+
+		// Store additional meta_keys in database.
+		update_option( WC_CUSTOM_ORDER_TABLE_OPTION, $metakeys_list );
+
+		return WP_CLI::success(
+			esc_html__( 'Meta keys list has been updated in the database. Run `wp wc orders-table populate` command to create columns for the additional keys.', 'woocommerce-custom-orders-table' )
+		);
+	}
+
+	/**
+	 * Create columns in the `woocommerce_orders` table for the additional meta keys.
+	 *
+	 * ## EXAMPLES
+	 *      wp wc orders-table populate
+	 *
+	 * @global $wpdb
+	 *
+	 * @return WP_CLI
+	 */
+	public function populate() {
+		global $wpdb;
+
+		$cols_added    = 0;
+		$metakeys_list = get_option( WC_CUSTOM_ORDER_TABLE_OPTION );
+
+		if ( ! $metakeys_list ) {
+			return WP_CLI::error(
+				esc_html__( 'No additional meta keys found in the database.', 'woocommerce-custom-orders-table' )
+			);
+		}
+
+		$order_table = wc_custom_order_table()->get_table_name();
+
+		// Loop over meta keys and check for existing column in the database.
+		foreach ( $metakeys_list as $col_name => $col_length ) {
+			$column = $wpdb->get_col(
+				$wpdb->prepare(
+					// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+					"SHOW COLUMNS FROM {$order_table} LIKE %s",
+					$col_name
+				)
+			);
+
+			// Column already exists.
+			if ( $column ) {
+				WP_CLI::log(
+					sprintf(
+						/* translators: %s: column name */
+						esc_html__( '`%s` column already exists in the database.', 'woocommerce-custom-orders-table' ),
+						$col_name
+					)
+				);
+
+				continue;
+			}
+
+			// Alter table to add column.
+			$query = $wpdb->query(
+				$wpdb->prepare(
+					"ALTER TABLE {$order_table} ADD COLUMN `{$col_name}` varchar(%d)",
+					$col_length
+				)
+			);
+
+			if ( ! $query ) {
+				WP_CLI::error(
+					sprintf(
+						/* translators: %s: column name */
+						esc_html__( 'There was an error while adding `%s` column to the table.', 'woocommerce-custom-orders-table' ),
+						$col_name
+					)
+				);
+
+				continue;
+			}
+
+			++$cols_added;
+		}
+
+		// Add a message at the end.
+		WP_CLI::success(
+			sprintf(
+				/* translators: %s: column name */
+				esc_html__( '%s columns added to the table.', 'woocommerce-custom-orders-table' ),
+				$cols_added
+			)
+		);
+	}
+
+	/**
 	 * Migrate order data to the custom orders table.
 	 *
 	 * ## OPTIONS
@@ -330,6 +488,8 @@ class WooCommerce_Custom_Orders_Table_CLI extends WP_CLI_Command {
 
 	/**
 	 * Build a SQL query to get posts that require migration.
+	 * Orders not marked as "completed" or the ones less than 7 days old
+	 * are skipped from migration.
 	 *
 	 * @global $wpdb
 	 *
@@ -350,6 +510,8 @@ class WooCommerce_Custom_Orders_Table_CLI extends WP_CLI_Command {
 			FROM {$wpdb->posts} p
 			LEFT JOIN {$order_table} o ON p.ID = o.order_id
 			WHERE p.post_type IN (" . implode( ', ', array_fill( 0, count( $order_types ), '%s' ) ) . ')
+			AND p.post_status = "wc-completed"
+			AND p.post_modified >= DATE_SUB(SYSDATE(), INTERVAL 30 DAY)
 			AND o.order_id IS NULL
 		';
 		$parameters  = $order_types;

@@ -1,11 +1,11 @@
 <?php
 /**
- * Plugin Name:          WooCommerce Custom Orders Table
- * Plugin URI:           https://github.com/liquidweb/woocommerce-custom-orders-tables
- * Description:          Store WooCommerce order data in a custom table for improved performance.
- * Version:              1.0.0-rc3
- * Author:               Liquid Web
- * Author URI:           https://www.liquidweb.com
+ * Plugin Name:          WooCommerce Archive Orders Table
+ * Plugin URI:           https://github.com/woocart/woocommerce-archive-orders-tables
+ * Description:          Archive WooCommerce order data in a custom table for improved performance.
+ * Version:              1.0.0
+ * Author:               WooCart
+ * Author URI:           https://www.woocart.com
  * License:              GPLv3 or later
  * License URI:          https://www.gnu.org/licenses/gpl-3.0.html
  *
@@ -21,6 +21,9 @@ defined( 'ABSPATH' ) || exit;
 /* Define constants to use throughout the plugin. */
 define( 'WC_CUSTOM_ORDER_TABLE_URL', plugin_dir_url( __FILE__ ) );
 define( 'WC_CUSTOM_ORDER_TABLE_PATH', plugin_dir_path( __FILE__ ) );
+
+// Database option name.
+define( 'WC_CUSTOM_ORDER_TABLE_OPTION', 'wc_woocart_archive_metakeys' );
 
 /**
  * Autoloader for plugin files.

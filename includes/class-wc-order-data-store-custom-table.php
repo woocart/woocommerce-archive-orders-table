@@ -52,9 +52,6 @@ class WC_Order_Data_Store_Custom_Table extends WC_Order_Data_Store_CPT {
 	/**
 	 * Read order data from the custom orders table.
 	 *
-	 * If the order does not yet exist, the plugin will attempt to migrate it automatically. This
-	 * behavior can be modified via the "wc_custom_order_table_automatic_migration" filter.
-	 *
 	 * @param WC_Order $order       The order object, passed by reference.
 	 * @param object   $post_object The post object.
 	 */
@@ -65,16 +62,22 @@ class WC_Order_Data_Store_Custom_Table extends WC_Order_Data_Store_CPT {
 			$order->set_props( $data );
 		} else {
 			/**
-			 * Toggle the ability for WooCommerce Custom Orders Table to automatically migrate orders.
-			 *
-			 * @param bool $migrate Whether or not orders should automatically be migrated once they
-			 *                      have been loaded.
+			 * Removed automatic migration of data to custom table.
+			 * Instead, we try to fetch metadata normally from the table.
 			 */
-			$migrate = apply_filters( 'wc_custom_order_table_automatic_migration', true );
+			$id   = $order->get_id();
+			$data = array();
 
-			if ( $migrate ) {
-				$this->populate_from_meta( $order );
+			// Loop over internal postmeta properties.
+			foreach ( WooCommerce_Custom_Orders_Table::get_postmeta_mapping() as $key => $value ) {
+				$data[ $key ] = get_post_meta( $id, $value, true );
 			}
+
+			// Get post for additional notes passed by the customer.
+			$post                  = get_post( $id );
+			$data['customer_note'] = $post->post_excerpt;
+
+			$order->set_props( $data );
 		}
 	}
 
@@ -180,6 +183,21 @@ class WC_Order_Data_Store_Custom_Table extends WC_Order_Data_Store_CPT {
 			'currency'             => $order->get_currency( 'edit' ),
 			'prices_include_tax'   => wc_bool_to_string( $order->get_prices_include_tax( 'edit' ) ),
 		);
+
+		// Add additional metakeys data.
+		$extra_metakeys   = get_option( WC_CUSTOM_ORDER_TABLE_OPTION, array() );
+		$extra_order_data = $order->get_meta_data();
+
+		if ( $extra_metakeys ) {
+			// Loop over keys to find the values and add them to $order_data array.
+			foreach ( $extra_order_data as $single_order_data ) {
+				if ( ! in_array( $single_order_data->key, array_keys( $extra_metakeys ), true ) ) {
+					continue;
+				}
+
+				$order_data[ $single_order_data->key ] = $single_order_data->value;
+			}
+		}
 
 		// Convert dates to timestamps, if they exist.
 		foreach ( array( 'date_completed', 'date_paid' ) as $date ) {

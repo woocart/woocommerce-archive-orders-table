@@ -93,7 +93,7 @@ class WooCommerce_Custom_Orders_Table {
 	 * @return array An array of database columns and their corresponding post_meta keys.
 	 */
 	public static function get_postmeta_mapping() {
-		return array(
+		$metakeys = array(
 			'order_key'            => '_order_key',
 			'customer_id'          => '_customer_user',
 			'payment_method'       => '_payment_method',
@@ -145,6 +145,24 @@ class WooCommerce_Custom_Orders_Table {
 			'reason'               => '_refund_reason',
 			'refunded_by'          => '_refunded_by',
 		);
+
+		// Get additional meta keys from the database.
+		$extra_metakeys = get_option( WC_CUSTOM_ORDER_TABLE_OPTION, array() );
+
+		if ( ! $extra_metakeys ) {
+			return $metakeys;
+		}
+
+		// Add additional meta keys for migration.
+		foreach ( $extra_metakeys as $meta_key => $col_length ) {
+			if ( isset( $metakeys[ $meta_key ] ) ) {
+				continue;
+			}
+
+			$metakeys[ $meta_key ] = $meta_key;
+		}
+
+		return $metakeys;
 	}
 
 	/**
@@ -280,5 +298,17 @@ class WooCommerce_Custom_Orders_Table {
 	 */
 	public static function order_refund_data_store() {
 		return 'WC_Order_Refund_Data_Store_Custom_Table';
+	}
+
+	/**
+	 * List of keys which are not required to be migrated.
+	 *
+	 * @return array List of blacklisted keys.
+	 */
+	public static function get_blacklisted_keys() {
+		return array(
+			'_edit_lock',
+			'_edit_last',
+		);
 	}
 }
