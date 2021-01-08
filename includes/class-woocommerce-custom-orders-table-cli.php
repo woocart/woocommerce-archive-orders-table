@@ -71,58 +71,48 @@ class WooCommerce_Custom_Orders_Table_CLI extends WP_CLI_Command {
 	public function optimize() {
 		global $wpdb;
 
+		$added       = 0;
 		$order_types = wc_get_order_types( 'reports' );
-		$order_ids   = $wpdb->get_col(
+		$meta_keys   = $wpdb->get_col(
 			$wpdb->prepare(
-				"SELECT p.ID FROM {$wpdb->posts} p WHERE p.post_type IN (" . implode( ', ', array_fill( 0, count( $order_types ), '%s' ) ) . ') LIMIT 0, 100',
+				// phpcs:disable WordPress.DB.PreparedSQLPlaceholders.LikeWildcardsInQuery
+				'SELECT DISTINCT meta_key FROM wp_postmeta as pm, wp_posts as p WHERE meta_key NOT LIKE "_oembed%" AND pm.post_id = p.ID AND p.post_type IN (' . implode( ', ', array_fill( 0, count( $order_types ), '%s' ) ) . ')',
 				$order_types
 			)
 		);
 
-		if ( empty( $order_ids ) ) {
+		if ( empty( $meta_keys ) ) {
 			return WP_CLI::error(
-				esc_html__( 'No orders exist. They are required to check for additional meta keys.', 'woocommerce-custom-orders-table' )
+				esc_html__( 'No additional meta keys found.', 'woocommerce-custom-orders-table' )
 			);
 		}
 
 		// Fetch stored metakeys.
-		$existing_keys = get_option( WC_CUSTOM_ORDER_TABLE_OPTION, array() );
+		$metakeys_list = get_option( WC_CUSTOM_ORDER_TABLE_OPTION, array() );
 
-		// Loop over order_ids to build a list of meta_keys.
-		$metakeys_list = array();
-
-		foreach ( $order_ids as $order ) {
-			$meta_data = get_post_meta( $order );
-
-			foreach ( $meta_data as $meta_key => $meta_value ) {
-				if ( in_array( $meta_key, array_values( WooCommerce_Custom_Orders_Table::get_postmeta_mapping() ), true ) ) {
-					continue;
-				}
-
-				// Check for key within blacklisted keys.
-				if ( in_array( $meta_key, WooCommerce_Custom_Orders_Table::get_blacklisted_keys(), true ) ) {
-					continue;
-				}
-
-				// Check if the key already exists.
-				if ( in_array( $meta_key, array_keys( $existing_keys ), true ) ) {
-					continue;
-				}
-
-				if ( ! isset( $metakeys_list[ $meta_key ] ) ) {
-					$metakeys_list[ $meta_key ] = strlen( $meta_value[0] );
-					continue;
-				}
-
-				// Check if the current value is lower than the new value.
-				if ( strlen( $metakeys_list[ $meta_key ] ) < strlen( $meta_value[0] ) ) {
-					$metakeys_list[ $meta_key ] = strlen( $meta_value[0] );
-				}
+		foreach ( $meta_keys as $meta_key ) {
+			if ( in_array( $meta_key, array_values( WooCommerce_Custom_Orders_Table::get_postmeta_mapping() ), true ) ) {
+				continue;
 			}
+
+			// Check for key within blacklisted keys.
+			if ( in_array( $meta_key, WooCommerce_Custom_Orders_Table::get_blacklisted_keys(), true ) ) {
+				continue;
+			}
+
+			// Check if the key already exists from the DB.
+			if ( in_array( $meta_key, $metakeys_list, true ) ) {
+				continue;
+			}
+
+			array_push( $metakeys_list, $meta_key );
+
+			// Update counter.
+			++$added;
 		}
 
 		// Check if we have additional meta_keys.
-		if ( ! count( $metakeys_list ) > 0 ) {
+		if ( ! $added > 0 ) {
 			return WP_CLI::log(
 				esc_html__( 'No additional meta keys were found.', 'woocommerce-custom-orders-table' )
 			);
@@ -161,7 +151,7 @@ class WooCommerce_Custom_Orders_Table_CLI extends WP_CLI_Command {
 		$order_table = wc_custom_order_table()->get_table_name();
 
 		// Loop over meta keys and check for existing column in the database.
-		foreach ( $metakeys_list as $col_name => $col_length ) {
+		foreach ( $metakeys_list as $col_name ) {
 			$column = $wpdb->get_col(
 				$wpdb->prepare(
 					// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared
@@ -186,8 +176,7 @@ class WooCommerce_Custom_Orders_Table_CLI extends WP_CLI_Command {
 			// Alter table to add column.
 			$query = $wpdb->query(
 				$wpdb->prepare(
-					"ALTER TABLE {$order_table} ADD COLUMN `{$col_name}` varchar(%d)",
-					$col_length
+					"ALTER TABLE {$order_table} ADD COLUMN `{$col_name}` text"
 				)
 			);
 
@@ -510,8 +499,8 @@ class WooCommerce_Custom_Orders_Table_CLI extends WP_CLI_Command {
 			FROM {$wpdb->posts} p
 			LEFT JOIN {$order_table} o ON p.ID = o.order_id
 			WHERE p.post_type IN (" . implode( ', ', array_fill( 0, count( $order_types ), '%s' ) ) . ')
-			AND p.post_status = "wc-completed"
-			AND p.post_modified >= DATE_SUB(SYSDATE(), INTERVAL 30 DAY)
+			AND p.post_status IN ("wc-completed", "wc-processing", "wc-pending", "wc-on-hold", "wc-cancelled", "wc-refunded")
+			AND p.post_modified <= DATE_SUB(SYSDATE(), INTERVAL 30 DAY)
 			AND o.order_id IS NULL
 		';
 		$parameters  = $order_types;

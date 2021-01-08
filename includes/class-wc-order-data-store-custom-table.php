@@ -191,7 +191,7 @@ class WC_Order_Data_Store_Custom_Table extends WC_Order_Data_Store_CPT {
 		if ( $extra_metakeys ) {
 			// Loop over keys to find the values and add them to $order_data array.
 			foreach ( $extra_order_data as $single_order_data ) {
-				if ( ! in_array( $single_order_data->key, array_keys( $extra_metakeys ), true ) ) {
+				if ( ! in_array( $single_order_data->key, $extra_metakeys, true ) ) {
 					continue;
 				}
 

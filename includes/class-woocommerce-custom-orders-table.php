@@ -154,7 +154,7 @@ class WooCommerce_Custom_Orders_Table {
 		}
 
 		// Add additional meta keys for migration.
-		foreach ( $extra_metakeys as $meta_key => $col_length ) {
+		foreach ( $extra_metakeys as $meta_key ) {
 			if ( isset( $metakeys[ $meta_key ] ) ) {
 				continue;
 			}
