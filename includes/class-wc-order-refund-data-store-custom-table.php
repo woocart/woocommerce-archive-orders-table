@@ -109,7 +109,7 @@ class WC_Order_Refund_Data_Store_Custom_Table extends WC_Order_Refund_Data_Store
 		if ( $extra_metakeys ) {
 			// Loop over keys to find the values and add them to $refund_data array.
 			foreach ( $extra_refund_data as $single_refund_data ) {
-				if ( ! in_array( $single_refund_data->key, array_keys( $extra_metakeys ), true ) ) {
+				if ( ! in_array( $single_refund_data->key, $extra_metakeys, true ) ) {
 					continue;
 				}
 
