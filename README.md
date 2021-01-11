@@ -1,19 +1,10 @@
-# WooCommerce Custom Orders Table
+# WooCommerce Archive Orders Table
 
-[![Build Status](https://travis-ci.org/liquidweb/woocommerce-custom-orders-table.svg?branch=develop)](https://travis-ci.org/liquidweb/woocommerce-custom-orders-table)
-[![Coverage Status](https://coveralls.io/repos/github/liquidweb/woocommerce-custom-orders-table/badge.svg?branch=develop)](https://coveralls.io/github/liquidweb/woocommerce-custom-orders-table?branch=develop)
+TODO This plugin improves WooCommerce performance by introducing a custom table to hold all of the most common order information in a single, properly-indexed location.
 
-This plugin improves WooCommerce performance by introducing a custom table to hold all of the most common order information in a single, properly-indexed location.
+## About TODO
 
-## Background
-
-[WooCommerce 3.0 introduced the notion of CRUD (Create, Read, Update, and Delete) interfaces](https://woocommerce.wordpress.com/2016/10/27/the-new-crud-classes-in-woocommerce-2-7/) in a move to unify the way WooCommerce data is stored and retrieved. However, orders are still stored as custom post types within WordPress, with each piece of order information (billing address, shipping address, taxes, totals, and more) being stored in post meta.
-
-In fact, WooCommerce will typically create over **40 separate post meta entries** for every single order. If your store receives even 10 orders a day, that means 400 new rows in the table every single day!
-
-The larger the post meta table grows, the longer queries will take to execute, potentially slowing down queries (and thus page load times) for you and your visitors.
-
-WooCommerce Custom Orders Table uses the WooCommerce CRUD design to save order data into a single, flat table that's optimized for WooCommerce queries; one order means only one new row, with minimal performance impact.
+This plugin is heavily based on [LiquidWeb's Custom Orders Table](https://github.com/liquidweb/woocommerce-custom-orders-table). The plugin caused many issues for our customers, so we built upon it and it now only moves archived orders.
 
 ## Requirements
 
@@ -75,7 +66,3 @@ This command does the opposite of `migrate`, looping through the orders table an
 	<dd>The number of orders to process in each batch. Default is 100 orders per batch.</dd>
 	<dd>Passing `--batch-size=0` will disable batching.</dd>
 </dl>
-
-## Contributing
-
-If you're interested in contributing to the development of the plugin or need to report an issue, please [see the contributing guidelines for the project](https://github.com/liquidweb/woocommerce-custom-orders-table/blob/develop/CONTRIBUTING.md).
