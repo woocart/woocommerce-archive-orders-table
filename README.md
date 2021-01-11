@@ -2,9 +2,7 @@
 
 This plugin can be used to archive orders older than 30 days to a separate orders table which helps to improve store's performance. There is absolutely no difference in how archived orders are displayed or accessed. However, the plugins relying on orders meta data won't be able to access data for the archived orders.
 
-## About
-
-This plugin is heavily based on [LiquidWeb's Custom Orders Table](https://github.com/liquidweb/woocommerce-custom-orders-table). The plugin caused many issues for our customers, so we built upon it and it now only moves archived orders.
+This plugin is based on [LiquidWeb's Custom Orders Table](https://github.com/liquidweb/woocommerce-custom-orders-table).
 
 ## Requirements
 
