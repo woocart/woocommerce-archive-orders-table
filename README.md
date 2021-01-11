@@ -1,10 +1,8 @@
 # WooCommerce Archive Orders Table
 
-TODO This plugin improves WooCommerce performance by introducing a custom table to hold all of the most common order information in a single, properly-indexed location.
+This plugin can be used to archive orders older than 30 days to a separate orders table which helps to improve store's performance. There is absolutely no difference in how archived orders are displayed or accessed. However, the plugins relying on orders meta data won't be able to access data for the archived orders.
 
-## About TODO
-
-This plugin is heavily based on [LiquidWeb's Custom Orders Table](https://github.com/liquidweb/woocommerce-custom-orders-table). The plugin caused many issues for our customers, so we built upon it and it now only moves archived orders.
+This plugin is based on [LiquidWeb's Custom Orders Table](https://github.com/liquidweb/woocommerce-custom-orders-table).
 
 ## Requirements
 
@@ -16,7 +14,7 @@ If you're looking to migrate existing order data, [you'll need to have the abili
 
 After installing and activating the plugin, you'll need to migrate orders from post meta into the newly-created orders table.
 
-The easiest way to accomplish this is via [WP-CLI](http://wp-cli.org/), and the plugin ships with three commands to help:
+The easiest way to accomplish this is via [WP-CLI](http://wp-cli.org/), and the plugin ships with five commands to help:
 
 ### Counting the orders to be migrated
 
@@ -26,9 +24,25 @@ If you'd like to see the number of orders that have yet to be moved into the ord
 $ wp wc orders-table count
 ```
 
+### Analysing extra meta keys added by plugins
+
+The first step in the migration process is to analyse the extra meta keys added by the plugins based on which additional columns are created in the orders table.
+
+```
+$ wp wc orders-table optimize
+```
+
+### Creating columns in the table for additional meta keys
+
+The `populate` command creates the additional columns in the database to accomodate data for the additional meta keys associated with the orders data.
+
+```
+$ wp wc orders-table populate
+```
+
 ### Migrate order data from post meta to the orders table
 
-The `migrate` command will flatten the most common post meta values for WooCommerce orders into a flat database table, optimized for performance.
+The `migrate` command will flatten all post meta values for WooCommerce orders into a flat database table, optimized for performance.
 
 ```
 $ wp wc orders-table migrate
