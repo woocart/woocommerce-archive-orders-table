@@ -37,15 +37,32 @@ class WooCommerce_Custom_Orders_Table_CLI extends WP_CLI_Command {
 	 *
 	 *     wp wc orders-table count
 	 *
+	 * ## OPTIONS
+	 *
+	 * [--duration=<no-of-days>]
+	 * : Set the duration of days, starting today, to skip archiving of orders.
+	 * For Ex: Setting this value to 45 will skip orders for the last 45 days from archiving.
+	 * ---
+	 * default: 30
+	 * ---
+
 	 * @global $wpdb
 	 *
+	 * @param array $assoc_args Associative arguments (options) passed to the command.
 	 * @return int The number of orders to be migrated.
 	 */
-	public function count() {
+	public function count( $assoc_args = array() ) {
 		global $wpdb;
 
+		$assoc_args = wp_parse_args(
+			$assoc_args,
+			array(
+				'duration' => 30,
+			)
+		);
+
 		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-		$order_count = $wpdb->get_var( $this->get_migration_query( 'COUNT(*)', 0 ) );
+		$order_count = $wpdb->get_var( $this->get_migration_query( 'COUNT(*)', 0, 0, $assoc_args['duration'] ) );
 
 		WP_CLI::log(
 			sprintf(
@@ -216,6 +233,13 @@ class WooCommerce_Custom_Orders_Table_CLI extends WP_CLI_Command {
 	 * default: 100
 	 * ---
 	 *
+	 * [--duration=<no-of-days>]
+	 * : Set the duration of days, starting today, to skip archiving of orders.
+	 * For Ex: Setting this value to 45 will skip orders for the last 45 days from archiving.
+	 * ---
+	 * default: 30
+	 * ---
+	 *
 	 * [--save-post-meta]
 	 * : Preserve the original post meta after a successful migration.
 	 * Default behavior is to clean up post meta.
@@ -232,20 +256,22 @@ class WooCommerce_Custom_Orders_Table_CLI extends WP_CLI_Command {
 	public function migrate( $args = array(), $assoc_args = array() ) {
 		global $wpdb;
 
-		$order_count = $this->count();
+		$assoc_args = wp_parse_args(
+			$assoc_args,
+			array(
+				'batch-size'     => 100,
+				'duration'       => 30,
+				'save-post-meta' => false,
+			)
+		);
+
+		$order_count = $this->count( array( 'duration' => $assoc_args['duration'] ) );
 
 		// Abort if there are no orders to migrate.
 		if ( ! $order_count ) {
 			return WP_CLI::warning( __( 'There are no orders to migrate, aborting.', 'woocommerce-custom-orders-table' ) );
 		}
 
-		$assoc_args  = wp_parse_args(
-			$assoc_args,
-			array(
-				'batch-size'     => 100,
-				'save-post-meta' => false,
-			)
-		);
 		$order_table = wc_custom_order_table()->get_table_name();
 		$order_types = wc_get_order_types( 'reports' );
 		$progress    = WP_CLI\Utils\make_progress_bar( 'Order Data Migration', $order_count );
@@ -253,7 +279,7 @@ class WooCommerce_Custom_Orders_Table_CLI extends WP_CLI_Command {
 		$batch_count = 1;
 
 		// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-		$order_data = $wpdb->get_col( $this->get_migration_query( 'p.ID', $assoc_args['batch-size'] ) );
+		$order_data = $wpdb->get_col( $this->get_migration_query( 'p.ID', $assoc_args['batch-size'], 0, $assoc_args['duration'] ) );
 
 		while ( ! empty( $order_data ) ) {
 
@@ -326,7 +352,7 @@ class WooCommerce_Custom_Orders_Table_CLI extends WP_CLI_Command {
 			$next_batch = array_filter(
 				$wpdb->get_col(
 					// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
-					$this->get_migration_query( 'p.ID', $assoc_args['batch-size'], count( $this->skipped_ids ) )
+					$this->get_migration_query( 'p.ID', $assoc_args['batch-size'], count( $this->skipped_ids ), $assoc_args['duration'] )
 				)
 			);
 
@@ -482,14 +508,15 @@ class WooCommerce_Custom_Orders_Table_CLI extends WP_CLI_Command {
 	 *
 	 * @global $wpdb
 	 *
-	 * @param string $select The contents of the SELECT clause.
-	 * @param int    $limit  The maximum number of results to return, or '0' to not limit the number
-	 *                       of results.
-	 * @param int    $offset Optional. The offset value. Default is 0.
+	 * @param string $select     The contents of the SELECT clause.
+	 * @param int    $limit      The maximum number of results to return, or '0' to not limit the number
+	 *                                               of results.
+	 * @param int    $offset     The offset value. Default is 0.
+	 * @param int    $duration Number of days to skip archiving. Default is 30.
 	 *
 	 * @return string The prepared SQL query.
 	 */
-	protected function get_migration_query( $select, $limit, $offset = 0 ) {
+	protected function get_migration_query( $select, $limit, $offset = 0, $duration = 30 ) {
 		global $wpdb;
 
 		$order_table = wc_custom_order_table()->get_table_name();
@@ -500,7 +527,7 @@ class WooCommerce_Custom_Orders_Table_CLI extends WP_CLI_Command {
 			LEFT JOIN {$order_table} o ON p.ID = o.order_id
 			WHERE p.post_type IN (" . implode( ', ', array_fill( 0, count( $order_types ), '%s' ) ) . ')
 			AND p.post_status IN ("wc-completed", "wc-processing", "wc-pending", "wc-on-hold", "wc-cancelled", "wc-refunded")
-			AND p.post_modified <= DATE_SUB(SYSDATE(), INTERVAL 30 DAY)
+			AND p.post_modified <= DATE_SUB(SYSDATE(), INTERVAL ' . $duration . ' DAY)
 			AND o.order_id IS NULL
 		';
 		$parameters  = $order_types;
