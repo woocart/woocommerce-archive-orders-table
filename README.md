@@ -24,6 +24,14 @@ If you'd like to see the number of orders that have yet to be moved into the ord
 $ wp wc orders-table count
 ```
 
+#### Options
+
+<dl>
+	<dt>--duration=&lt;no-of-days&gt;</dt>
+	<dd>Set the duration of days, starting today, to skip archiving of orders.</dd>
+	<dd>For Ex: Setting this value to 45 will skip orders for the last 45 days from archiving.</dd>
+</dl>
+
 ### Analysing extra meta keys added by plugins
 
 The first step in the migration process is to analyse the extra meta keys added by the plugins based on which additional columns are created in the orders table.
@@ -58,6 +66,9 @@ Orders are queried in batches (determined via the `--batch-size` option) in orde
 	<dt>--batch-size=&lt;size&gt;</dt>
 	<dd>The number of orders to process in each batch. Default is 100 orders per batch.</dd>
 	<dd>Passing `--batch-size=0` will disable batching.</dd>
+	<dt>--duration=&lt;no-of-days&gt;</dt>
+	<dd>Set the duration of days, starting today, to skip archiving of orders.</dd>
+	<dd>For Ex: Setting this value to 45 will skip orders for the last 45 days from archiving.</dd>
 	<dt>--save-post-meta</dt>
 	<dd>Preserve the original post meta after a successful migration. Default behavior is to clean up post meta.</dd>
 </dl>
