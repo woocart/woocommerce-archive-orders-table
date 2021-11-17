@@ -406,10 +406,14 @@ class WooCommerce_Custom_Orders_Table_CLI extends WP_CLI_Command {
 	 * default: 100
 	 * ---
 	 *
+	 * [--delete-custom-orders]
+	 * : Delete the custom order after a successful backfill.
+	 * Default behavior is to keep custom orders.
+	 *
 	 * ## EXAMPLES
 	 *
 	 *     # Copy all order data into the post meta table, 100 posts at a time, delete custom order.
-	 *     wp wc orders-table backfill --batch-size=100 --delete-custom-orders=true
+	 *     wp wc orders-table backfill --batch-size=100 --delete-custom-orders
 	 *
 	 * @global $wpdb
 	 *
@@ -423,7 +427,7 @@ class WooCommerce_Custom_Orders_Table_CLI extends WP_CLI_Command {
 			$assoc_args,
 			array(
 				'batch-size' => 100,
-				'delete-custom-orders' => false
+				'delete-custom-orders' => false,
 			)
 		);
 		$order_table = wc_custom_order_table()->get_table_name();
