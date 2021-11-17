@@ -48,10 +48,11 @@ class WooCommerce_Custom_Orders_Table_CLI extends WP_CLI_Command {
 
 	 * @global $wpdb
 	 *
+	 * @param array $args       Positional arguments passed to the command.
 	 * @param array $assoc_args Associative arguments (options) passed to the command.
 	 * @return int The number of orders to be migrated.
 	 */
-	public function count( $assoc_args = array() ) {
+	public function count( $args = array(), $assoc_args = array() ) {
 		global $wpdb;
 
 		$assoc_args = wp_parse_args(
@@ -265,7 +266,7 @@ class WooCommerce_Custom_Orders_Table_CLI extends WP_CLI_Command {
 			)
 		);
 
-		$order_count = $this->count( array( 'duration' => $assoc_args['duration'] ) );
+		$order_count = $this->count( array(), array( 'duration' => $assoc_args['duration'] ) );
 
 		// Abort if there are no orders to migrate.
 		if ( ! $order_count ) {
