@@ -426,7 +426,7 @@ class WooCommerce_Custom_Orders_Table_CLI extends WP_CLI_Command {
 		$assoc_args  = wp_parse_args(
 			$assoc_args,
 			array(
-				'batch-size' => 100,
+				'batch-size'           => 100,
 				'delete-custom-orders' => false,
 			)
 		);
