@@ -266,7 +266,7 @@ class WooCommerce_Custom_Orders_Table_CLI extends WP_CLI_Command {
 			)
 		);
 
-		$order_count = $this->count( array( 'duration' => $assoc_args['duration'] ) );
+		$order_count = $this->count( array(), array( 'duration' => $assoc_args['duration'] ) );
 
 		// Abort if there are no orders to migrate.
 		if ( ! $order_count ) {
