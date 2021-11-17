@@ -91,3 +91,7 @@ This command does the opposite of `migrate`, looping through the orders table an
 	<dd>The number of orders to process in each batch. Default is 100 orders per batch.</dd>
 	<dd>Passing `--batch-size=0` will disable batching.</dd>
 </dl>
+<dl>
+	<dt>--delete-custom-orders</dt>
+	<dd>Delete the custom order after a successful backfill. Default behavior is to keep custom orders.</dd>
+</dl>
