@@ -259,7 +259,7 @@ class WooCommerce_Custom_Orders_Table {
 
 		foreach ( self::get_postmeta_mapping() as $column => $meta_key ) {
 			if ( isset( $data[ $column ] ) ) {
-				update_post_meta( $order->get_id(), $meta_key, $data[ $column ] );
+				wc_update_order_item_meta( $order->get_id(), $meta_key, $data[ $column ] );
 			}
 		}
 
